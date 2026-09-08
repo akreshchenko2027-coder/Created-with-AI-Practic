@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Детекція об'єктів</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 20px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Детекція об'єктів</h1>
+        
+        <form id="upload-form">
+            <div class="form-group">
+                <input type="file" id="file-input" accept="image/*" required>
+                <button type="submit">Знайти об'єкти</button>
+            </div>
+        </form>
+
+        <div id="result-container">
+            <h3>Результат:</h3>
+            <pre id="output">Виберіть файл та натисніть кнопку</pre>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const fileInput = document.getElementById('file-input');
+        const output = document.getElementById('output');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!fileInput.files[0]) {
+                alert('Будь ласка, виберіть файл!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('conf_threshold', '0.25');
+
+            output.textContent = 'Обробка...';
+
+            try {
+                const response = await fetch('/api/detect', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    output.className = 'error';
+                    output.textContent = 'Помилка: ' + JSON.stringify(data, null, 2);
+                } else {
+                    output.className = '';
+                    output.textContent = JSON.stringify(data, null, 2);
+                }
+            } catch (err) {
+                output.className = 'error';
+                output.textContent = 'Мережева помилка: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html> 

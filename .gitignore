@@ -1,0 +1,29 @@
+# Віртуальні середовища та системний Git
+.venv/
+venv/
+env/
+Git/
+
+# Кеш Python
+__pycache__/
+*.pyc
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Локальні секрети та налаштування
+.env
+.env.local
+*.local.json
+
+# Ваги моделей та специфічні дані практичних
+*.pt
+pr2/eval/images/
+pr2/eval/expected.json
+
+# Редактори та ОС
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

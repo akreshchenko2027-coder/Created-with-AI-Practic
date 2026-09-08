@@ -1,0 +1,20 @@
+{
+  "_комент": "Зразок формату. Скопіюйте у expected.json і замініть своїми зображеннями.",
+  "images": [
+    {
+      "file": "images/street-01.jpg",
+      "expected": ["person", "person", "car", "traffic light"],
+      "note": "двоє пішоходів на переході, один автомобіль, світлофор угорі кадру"
+    },
+    {
+      "file": "images/kitchen-01.jpg",
+      "expected": ["bottle", "cup", "bowl"],
+      "note": "чашка частково перекрита пляшкою — цікавий випадок"
+    },
+    {
+      "file": "images/empty-wall.jpg",
+      "expected": [],
+      "note": "жодного обʼєкта; перевіряє хибні спрацювання"
+    }
+  ]
+}

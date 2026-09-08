@@ -1,0 +1,29 @@
+# Віртуальні середовища
+.venv/
+venv/
+env/
+
+# Кеш Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Локальні налаштування й секрети
+.env
+.env.local
+*.local.json
+
+# Ваги моделей — завантажуються автоматично, у репозиторії не потрібні
+*.pt
+
+# Власний набір для оцінювання (ПР2): зображення й очікувані відповіді
+pr2/eval/images/
+pr2/eval/expected.json
+
+# Редактори та ОС
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

@@ -1,0 +1,20 @@
+{
+  "results": [
+    {
+      "id": 703448,
+      "name": "Київ",
+      "latitude": 50.45466,
+      "longitude": 30.5238,
+      "elevation": 179.0,
+      "feature_code": "PPLC",
+      "country_code": "UA",
+      "admin1_id": 703447,
+      "timezone": "Europe/Kyiv",
+      "population": 2952301,
+      "country_id": 690791,
+      "country": "Україна",
+      "admin1": "Місто Київ"
+    }
+  ],
+  "generationtime_ms": 0.35381317
+}

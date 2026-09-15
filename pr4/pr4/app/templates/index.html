@@ -1,0 +1,159 @@
+<meta charset="utf-8">
+<title>Помічник служби підтримки — ПР4</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 64rem; margin: 2.5rem auto; padding: 0 1.25rem;
+         font: 16px/1.55 system-ui, sans-serif; }
+  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+  p.lead { margin-top: 0; opacity: .75; }
+  .layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(14rem, 2fr); gap: 1.5rem; }
+  @media (max-width: 44rem) { .layout { grid-template-columns: 1fr; } }
+  #chat { display: flex; flex-direction: column; gap: .6rem; min-height: 14rem;
+          padding: 1rem; border: 1px solid #8886; border-radius: .4rem; }
+  #chat:empty::before { content: 'Розмову ще не почато.'; opacity: .6; }
+  .msg { max-width: 85%; padding: .5rem .75rem; border-radius: .6rem; white-space: pre-wrap; }
+  .user { align-self: flex-end; background: #2563eb; color: #fff; }
+  .assistant { align-self: flex-start; background: #8882; }
+  .error { align-self: flex-start; border: 1px solid #dc2626; }
+  .pending { opacity: .6; }
+  form { display: flex; gap: .5rem; margin-top: .75rem; }
+  textarea { flex: 1; min-height: 3.2rem; padding: .5rem .7rem; font: inherit;
+             border: 1px solid #8886; border-radius: .4rem; resize: vertical; }
+  button { padding: .5rem 1.1rem; font: inherit; border: 0; border-radius: .4rem;
+           background: #2563eb; color: #fff; cursor: pointer; }
+  button.secondary { background: #8884; color: inherit; }
+  button[disabled] { opacity: .55; cursor: default; }
+  aside h2 { font-size: 1rem; margin: 0 0 .5rem; }
+  #card { border: 1px solid #8886; border-radius: .4rem; padding: .75rem 1rem; }
+  #card dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: .25rem .75rem; }
+  #card dt { opacity: .7; }
+  #card dd { margin: 0; word-break: break-word; }
+  #card:empty::before { content: 'Картка заповниться в міру розмови.'; opacity: .6; }
+  .meta { margin-top: .6rem; font-size: .85rem; opacity: .7; }
+</style>
+
+<h1>Помічник служби підтримки</h1>
+<p class="lead">Веде розмову на підставі правил магазину з файлу <code>context.md</code> і повертає структуровану відповідь.</p>
+
+<div class="layout">
+  <section>
+    <div id="chat"></div>
+    <form id="form">
+      <textarea id="message" placeholder="Добрий день! Замовлення 482913, навушники прийшли з тріщиною на дужці." required></textarea>
+      <button type="submit" id="send">Надіслати</button>
+      <button type="button" class="secondary" id="reset">Нова розмова</button>
+    </form>
+  </section>
+  <aside>
+    <h2>Картка звернення</h2>
+    <div id="card"></div>
+    <div class="meta" id="meta"></div>
+  </aside>
+</div>
+
+<script>
+  const chat = document.getElementById('chat');
+  const form = document.getElementById('form');
+  const message = document.getElementById('message');
+  const send = document.getElementById('send');
+  const card = document.getElementById('card');
+  const meta = document.getElementById('meta');
+
+  // Історію розмови сторінка веде сама і надсилає з кожним запитом:
+  // репліки клієнта і текст відповідей помічника (не весь JSON).
+  // Чи довіряти їй на сервері — ваше рішення.
+  const history = [];
+
+  function addMessage(kind, text) {
+    const div = document.createElement('div');
+    div.className = `msg ${kind}`;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+    return div;
+  }
+
+  function formatValue(value) {
+    if (value === true) return 'так';
+    if (value === false) return 'ні';
+    if (value === null || value === undefined || value === '') return '—';
+    if (typeof value === 'object') return JSON.stringify(value);
+    return String(value);
+  }
+
+  // Усі поля результату, крім тексту відповіді, — це і є картка звернення.
+  function renderCard(result) {
+    card.innerHTML = '';
+    const dl = document.createElement('dl');
+    for (const [key, value] of Object.entries(result)) {
+      if (key === 'reply') continue;
+      const dt = document.createElement('dt');
+      dt.textContent = key;
+      const dd = document.createElement('dd');
+      dd.textContent = formatValue(value);
+      dl.append(dt, dd);
+    }
+    if (dl.childElementCount) card.appendChild(dl);
+  }
+
+  function renderMeta(data) {
+    const parts = [];
+    if (data.model) parts.push(`модель: ${data.model}`);
+    if (data.elapsed !== undefined) parts.push(`час: ${Number(data.elapsed).toFixed(2)} с`);
+    if (data.usage) {
+      const u = data.usage;
+      parts.push(`токени: ${u.prompt_tokens ?? '?'} у запиті, ${u.completion_tokens ?? '?'} у відповіді`);
+    }
+    meta.textContent = parts.join(' · ');
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const text = message.value.trim();
+    if (!text) return;
+
+    addMessage('user', text);
+    const pending = addMessage('assistant pending', 'Запит виконується…');
+    send.disabled = true;
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, history }),
+      });
+      const data = await response.json();
+      pending.remove();
+
+      if (!response.ok) {
+        addMessage('error', data.detail || `Помилка ${response.status}`);
+        return;
+      }
+
+      // Склад полів відповіді визначаєте ви — тут показано найочікуваніші:
+      // текст для клієнта в result.reply, решта полів result — картка.
+      const result = data.result ?? data;
+      const reply = result.reply ?? JSON.stringify(result, null, 2);
+      addMessage('assistant', reply);
+      history.push({ role: 'user', content: text });
+      history.push({ role: 'assistant', content: reply });
+      renderCard(result);
+      renderMeta(data);
+      message.value = '';
+    } catch (error) {
+      pending.remove();
+      addMessage('error', 'Не вдалося звʼязатися із застосунком.');
+    } finally {
+      send.disabled = false;
+      message.focus();
+    }
+  });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    history.length = 0;
+    chat.innerHTML = '';
+    card.innerHTML = '';
+    meta.textContent = '';
+    message.focus();
+  });
+</script>

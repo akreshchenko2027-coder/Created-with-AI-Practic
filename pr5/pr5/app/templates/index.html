@@ -1,0 +1,211 @@
+<meta charset="utf-8">
+<title>Пошук у базі знань — ПР5</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 72rem; margin: 2.5rem auto; padding: 0 1.25rem;
+         font: 16px/1.55 system-ui, sans-serif; }
+  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+  p.lead { margin-top: 0; opacity: .75; }
+  #status { font-size: .9rem; margin-bottom: 1rem; }
+  #status.warn { color: #dc2626; }
+  form { display: grid; gap: .6rem; margin-bottom: 1.25rem; }
+  .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+  input[type=text] { flex: 1; min-width: 16rem; padding: .5rem .7rem; font: inherit;
+                     border: 1px solid #8886; border-radius: .4rem; }
+  select, input[type=number] { padding: .35rem .5rem; font: inherit;
+                               border: 1px solid #8886; border-radius: .4rem; }
+  label { font-size: .9rem; opacity: .85; display: inline-flex; gap: .35rem; align-items: center; }
+  button { padding: .5rem 1.1rem; font: inherit; border: 0; border-radius: .4rem;
+           background: #2563eb; color: #fff; cursor: pointer; }
+  button[disabled] { opacity: .55; cursor: default; }
+  .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 52rem) { .columns { grid-template-columns: 1fr; } }
+  .column h2 { font-size: 1rem; margin: 0 0 .5rem; }
+  .column h2 small { font-weight: normal; opacity: .65; }
+  .hit { border: 1px solid #8886; border-radius: .4rem; padding: .6rem .8rem; margin-bottom: .6rem; }
+  .hit .head { display: flex; justify-content: space-between; gap: .5rem; font-size: .9rem; }
+  .hit .title { font-weight: 600; }
+  .hit .score { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .bar { height: 3px; background: #8883; border-radius: 2px; margin: .35rem 0 .5rem; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: #2563eb; }
+  .hit .text { white-space: pre-wrap; font-size: .92rem; }
+  .hit .meta { margin-top: .4rem; font-size: .8rem; opacity: .7; }
+  .hit .meta span { margin-right: .6rem; }
+  .empty { opacity: .6; font-size: .9rem; }
+  .error { border: 1px solid #dc2626; border-radius: .4rem; padding: .6rem .8rem; }
+</style>
+
+<h1>Пошук у базі знань магазину «Сузірʼя»</h1>
+<p class="lead">Семантичний пошук і пошук за ключовими словами по тих самих фрагментах колекції <code>docs/</code>.</p>
+<div id="status"></div>
+
+<form id="form">
+  <div class="row">
+    <input type="text" id="query" placeholder="Не тримає заряд, що робити?" required>
+    <button type="submit" id="send">Шукати</button>
+  </div>
+  <div class="row">
+    <label>Режим
+      <select id="mode">
+        <option value="both">обидва способи</option>
+        <option value="semantic">семантичний</option>
+        <option value="keyword">за ключовими словами</option>
+      </select>
+    </label>
+    <label>top-k <input type="number" id="topk" value="5" min="1" max="50" style="width:4.5rem"></label>
+    <label>поріг <input type="number" id="threshold" step="0.01" min="0" max="1" placeholder="—" style="width:5.5rem"></label>
+  </div>
+  <div class="row">
+    <!-- Значення полів — з docs/README.md. Додасте документи з іншими
+         значеннями — допишіть їх тут; сторінка ваша. -->
+    <label>категорія
+      <select id="f-category">
+        <option value="">будь-яка</option>
+        <option>правила</option><option>гарантія</option><option>faq</option>
+        <option>інструкція</option><option>програма</option><option>політика</option>
+        <option>довідник</option><option>внутрішнє</option>
+      </select>
+    </label>
+    <label>товар
+      <select id="f-product">
+        <option value="">будь-який</option>
+        <option>Оріон X2</option><option>Вега S</option>
+        <option>Альтаїр AX3</option><option>Сіріус R10</option>
+      </select>
+    </label>
+    <label>аудиторія
+      <select id="f-audience">
+        <option value="">будь-яка</option>
+        <option>клієнти</option><option>персонал</option>
+      </select>
+    </label>
+    <label>статус
+      <select id="f-status">
+        <option value="">будь-який</option>
+        <option>чинний</option><option>архів</option>
+      </select>
+    </label>
+  </div>
+</form>
+
+<div class="columns">
+  <section class="column">
+    <h2>Семантичний <small id="t-semantic"></small></h2>
+    <div id="semantic" class="empty">Результатів ще немає.</div>
+  </section>
+  <section class="column">
+    <h2>За ключовими словами <small id="t-keyword"></small></h2>
+    <div id="keyword" class="empty">Результатів ще немає.</div>
+  </section>
+</div>
+
+<script>
+  const form = document.getElementById('form');
+  const send = document.getElementById('send');
+  const status = document.getElementById('status');
+
+  async function loadStatus() {
+    try {
+      const data = await (await fetch('/api/status')).json();
+      if (data.ready) {
+        status.className = '';
+        status.textContent = `Індекс: ${data.chunks} фрагментів із ${data.documents} документів, модель ${data.model}.`;
+      } else {
+        status.className = 'warn';
+        status.textContent = data.hint || 'Індекс не збудовано.';
+      }
+    } catch {
+      status.className = 'warn';
+      status.textContent = 'Не вдалося дізнатися стан індексу.';
+    }
+  }
+
+  function filters() {
+    const out = {};
+    for (const key of ['category', 'product', 'audience', 'status']) {
+      const value = document.getElementById(`f-${key}`).value;
+      if (value) out[key] = value;
+    }
+    return out;
+  }
+
+  // Оцінки двох способів у різних одиницях: семантична — схожість у межах
+  // [-1, 1], за словами — те, що поверне ваш ранжувальник. Смужка лише
+  // для порівняння всередині одного стовпця.
+  function render(container, hits, kind) {
+    container.innerHTML = '';
+    if (hits === null) { container.className = 'empty'; container.textContent = 'Спосіб не запитували.'; return; }
+    if (!hits.length) { container.className = 'empty'; container.textContent = 'Нічого не знайдено.'; return; }
+    container.className = '';
+    const max = Math.max(...hits.map(h => h.score), 1e-9);
+    for (const hit of hits) {
+      const div = document.createElement('div');
+      div.className = 'hit';
+      const m = hit.metadata || {};
+      const head = document.createElement('div');
+      head.className = 'head';
+      head.innerHTML = `<span class="title"></span><span class="score"></span>`;
+      head.querySelector('.title').textContent = m.title || hit.source;
+      head.querySelector('.score').textContent = hit.score.toFixed(3);
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.innerHTML = '<i></i>';
+      bar.firstChild.style.width = `${Math.max(0, hit.score) / max * 100}%`;
+      const text = document.createElement('div');
+      text.className = 'text';
+      text.textContent = hit.text;
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const parts = [hit.source];
+      for (const key of ['heading', 'category', 'product', 'audience', 'updated', 'status']) {
+        if (m[key]) parts.push(`${key}: ${m[key]}`);
+      }
+      meta.innerHTML = parts.map(() => '<span></span>').join('');
+      [...meta.children].forEach((el, i) => el.textContent = parts[i]);
+      div.append(head, bar, text, meta);
+      container.appendChild(div);
+    }
+  }
+
+  function showError(message) {
+    for (const id of ['semantic', 'keyword']) {
+      const el = document.getElementById(id);
+      el.className = 'error';
+      el.textContent = message;
+    }
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const query = document.getElementById('query').value.trim();
+    const thresholdRaw = document.getElementById('threshold').value;
+    const payload = {
+      query,
+      mode: document.getElementById('mode').value,
+      top_k: Number(document.getElementById('topk').value) || 5,
+      filters: filters(),
+      threshold: thresholdRaw === '' ? null : Number(thresholdRaw),
+    };
+    send.disabled = true;
+    try {
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) { showError(data.detail || `Помилка ${response.status}`); return; }
+      render(document.getElementById('semantic'), data.semantic, 'semantic');
+      render(document.getElementById('keyword'), data.keyword, 'keyword');
+      const e = data.elapsed || {};
+      document.getElementById('t-semantic').textContent = e.semantic !== undefined ? `${(e.semantic * 1000).toFixed(0)} мс` : '';
+      document.getElementById('t-keyword').textContent = e.keyword !== undefined ? `${(e.keyword * 1000).toFixed(0)} мс` : '';
+    } catch {
+      showError('Не вдалося звʼязатися із застосунком.');
+    } finally {
+      send.disabled = false;
+    }
+  });
+
+  loadStatus();
+</script>

@@ -1,0 +1,69 @@
+<<<<<<< HEAD
+# Віртуальні середовища
+.venv/
+venv/
+env/
+
+# Кеш Python
+__pycache__/
+=======
+# Віртуальні середовища та системний Git
+.venv/
+venv/
+env/
+Git/
+
+# Кеш Python
+__pycache__/
+*.pyc
+>>>>>>> 366cf8f83f922b98f49c4b617308c888a7a1eba6
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+<<<<<<< HEAD
+# Локальні налаштування й секрети
+=======
+# Локальні секрети та налаштування
+>>>>>>> 366cf8f83f922b98f49c4b617308c888a7a1eba6
+.env
+.env.local
+*.local.json
+
+<<<<<<< HEAD
+# Ваги моделей — завантажуються автоматично, у репозиторії не потрібні
+*.pt
+
+# Власний набір для оцінювання (ПР2): зображення й очікувані відповіді
+pr2/eval/images/
+pr2/eval/expected.json
+
+# Власний набір звернень і висновки (ПР3, ПР4)
+pr3/compare/requests.json
+pr3/compare/findings.md
+pr4/compare/requests.json
+pr4/compare/findings.md
+
+# Збудований індекс і власний набір запитів (ПР5): індекс відтворюється
+# командою python ingest.py
+pr5/index/
+pr5/compare/queries.json
+pr5/compare/findings.md
+
+=======
+# Ваги моделей та специфічні дані практичних
+*.pt
+pr2/eval/images/
+pr2/eval/expected.json
+
+>>>>>>> 366cf8f83f922b98f49c4b617308c888a7a1eba6
+# Редактори та ОС
+.vscode/
+.idea/
+*.swp
+.DS_Store
+<<<<<<< HEAD
+Thumbs.db
+=======
+Thumbs.db
+>>>>>>> 366cf8f83f922b98f49c4b617308c888a7a1eba6

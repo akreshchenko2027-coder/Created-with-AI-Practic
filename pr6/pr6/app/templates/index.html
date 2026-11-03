@@ -1,0 +1,232 @@
+<meta charset="utf-8">
+<title>Помічник за базою знань — ПР6</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 64rem; margin: 2.5rem auto; padding: 0 1.25rem;
+         font: 16px/1.55 system-ui, sans-serif; }
+  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+  p.lead { margin-top: 0; opacity: .75; }
+  #status { font-size: .9rem; margin-bottom: 1rem; }
+  #status.warn { color: #dc2626; }
+  form { display: grid; gap: .6rem; margin-bottom: 1.25rem; }
+  .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+  textarea { flex: 1; min-width: 16rem; min-height: 3.2rem; padding: .5rem .7rem; font: inherit;
+             border: 1px solid #8886; border-radius: .4rem; resize: vertical; }
+  select { padding: .35rem .5rem; font: inherit; border: 1px solid #8886; border-radius: .4rem; }
+  label { font-size: .9rem; opacity: .85; display: inline-flex; gap: .35rem; align-items: center; }
+  button { padding: .5rem 1.1rem; font: inherit; border: 0; border-radius: .4rem;
+           background: #2563eb; color: #fff; cursor: pointer; }
+  button[disabled] { opacity: .55; cursor: default; }
+  .layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(16rem, 2fr); gap: 1.5rem; }
+  @media (max-width: 48rem) { .layout { grid-template-columns: 1fr; } }
+  #answer { border: 1px solid #8886; border-radius: .4rem; padding: .8rem 1rem; white-space: pre-wrap; min-height: 4rem; }
+  #answer.empty { opacity: .6; }
+  #answer.error { border-color: #dc2626; }
+  .badge { display: inline-block; font-size: .8rem; padding: .1rem .5rem; border-radius: 1rem;
+           background: #8883; margin-bottom: .5rem; }
+  .badge.found { background: #16a34a33; }
+  .badge.missing { background: #dc262633; }
+  aside h2 { font-size: 1rem; margin: 0 0 .5rem; }
+  .src { border: 1px solid #8886; border-radius: .4rem; padding: .5rem .7rem; margin-bottom: .5rem; font-size: .9rem; }
+  .src .head { display: flex; justify-content: space-between; gap: .5rem; }
+  .src .ref { font-weight: 600; }
+  .src .score { font-variant-numeric: tabular-nums; opacity: .7; }
+  .src .meta { font-size: .8rem; opacity: .7; }
+  .src .meta span { margin-right: .6rem; }
+  .empty { opacity: .6; font-size: .9rem; }
+  details { margin-top: 1.25rem; }
+  summary { cursor: pointer; font-size: .95rem; }
+  .frag { border-left: 3px solid #8886; padding: .3rem .8rem; margin: .6rem 0; font-size: .9rem; white-space: pre-wrap; }
+  .frag .head { font-size: .8rem; opacity: .7; margin-bottom: .2rem; }
+  .meta-line { margin-top: .6rem; font-size: .85rem; opacity: .7; }
+</style>
+
+<h1>Помічник за базою знань магазину «Сузірʼя»</h1>
+<p class="lead">Відповідає на питання за документами з <code>docs/</code>: спершу шукає фрагменти, потім віддає їх мовній моделі й показує, на що вона спиралася.</p>
+<div id="status"></div>
+
+<form id="form">
+  <div class="row">
+    <textarea id="question" placeholder="Замовив навушники, а вони не підходять. Чи можу повернути?" required></textarea>
+    <button type="submit" id="send">Запитати</button>
+  </div>
+  <div class="row">
+    <!-- Єдиний фільтр, який обирає користувач: товар. Аудиторію й статус
+         документа сторінка не пропонує — це рішення коду, не користувача.
+         Захочете інакше — сторінка ваша. -->
+    <label>товар
+      <select id="f-product">
+        <option value="">будь-який</option>
+        <option>Оріон X2</option><option>Вега S</option>
+        <option>Альтаїр AX3</option><option>Сіріус R10</option>
+      </select>
+    </label>
+  </div>
+</form>
+
+<div class="layout">
+  <section>
+    <div id="badge"></div>
+    <div id="answer" class="empty">Відповіді ще немає.</div>
+    <div class="meta-line" id="meta"></div>
+  </section>
+  <aside>
+    <h2>Джерела</h2>
+    <div id="sources" class="empty">Джерела зʼявляться разом із відповіддю.</div>
+  </aside>
+</div>
+
+<details id="retrieved-box">
+  <summary>Що бачила модель — фрагменти, передані в контекст</summary>
+  <div id="retrieved" class="empty">Ще нічого.</div>
+</details>
+
+<script>
+  const form = document.getElementById('form');
+  const send = document.getElementById('send');
+  const status = document.getElementById('status');
+  const answerBox = document.getElementById('answer');
+  const badge = document.getElementById('badge');
+  const sourcesBox = document.getElementById('sources');
+  const retrievedBox = document.getElementById('retrieved');
+  const meta = document.getElementById('meta');
+
+  async function loadStatus() {
+    try {
+      const data = await (await fetch('/api/status')).json();
+      if (data.ready) {
+        status.className = '';
+        status.textContent = `Індекс: ${data.chunks} фрагментів із ${data.documents} документів, модель ембедінгів ${data.model}.`;
+      } else {
+        status.className = 'warn';
+        status.textContent = data.hint || 'Індекс не збудовано.';
+      }
+    } catch {
+      status.className = 'warn';
+      status.textContent = 'Не вдалося дізнатися стан індексу.';
+    }
+  }
+
+  function filters() {
+    const out = {};
+    const product = document.getElementById('f-product').value;
+    if (product) out.product = product;
+    return out;
+  }
+
+  function metaParts(m) {
+    const parts = [];
+    for (const key of ['heading', 'updated', 'status']) {
+      if (m[key]) parts.push(`${key}: ${m[key]}`);
+    }
+    return parts;
+  }
+
+  // Джерела — те, на що спиралася відповідь. Номер [n] — той самий, що в
+  // тексті контексту; так відповідь можна звірити з фрагментом.
+  function renderSources(sources) {
+    sourcesBox.innerHTML = '';
+    if (!sources || !sources.length) {
+      sourcesBox.className = 'empty';
+      sourcesBox.textContent = 'Відповідь не спирається на жодне джерело.';
+      return;
+    }
+    sourcesBox.className = '';
+    for (const s of sources) {
+      const m = s.metadata || {};
+      const div = document.createElement('div');
+      div.className = 'src';
+      const head = document.createElement('div');
+      head.className = 'head';
+      head.innerHTML = '<span class="ref"></span><span class="score"></span>';
+      head.querySelector('.ref').textContent = `[${s.ref}] ${m.title || s.source}`;
+      head.querySelector('.score').textContent = typeof s.score === 'number' ? s.score.toFixed(3) : '';
+      const metaEl = document.createElement('div');
+      metaEl.className = 'meta';
+      const parts = [s.source, ...metaParts(m)];
+      metaEl.innerHTML = parts.map(() => '<span></span>').join('');
+      [...metaEl.children].forEach((el, i) => el.textContent = parts[i]);
+      div.append(head, metaEl);
+      sourcesBox.appendChild(div);
+    }
+  }
+
+  // Фрагменти, які бачила модель, — для налагодження. Якщо відповідь
+  // неправильна, спершу дивіться сюди: чи була правильна відповідь у
+  // контексті. Була — помилка генерації; не було — помилка пошуку.
+  function renderRetrieved(hits) {
+    retrievedBox.innerHTML = '';
+    if (!hits || !hits.length) {
+      retrievedBox.className = 'empty';
+      retrievedBox.textContent = 'Моделі не передано жодного фрагмента.';
+      return;
+    }
+    retrievedBox.className = '';
+    hits.forEach((h, i) => {
+      const m = h.metadata || {};
+      const div = document.createElement('div');
+      div.className = 'frag';
+      const head = document.createElement('div');
+      head.className = 'head';
+      const score = typeof h.score === 'number' ? ` · ${h.score.toFixed(3)}` : '';
+      head.textContent = `[${i + 1}] ${m.title || h.source}${m.heading ? ' · ' + m.heading : ''}${score}`;
+      const text = document.createElement('div');
+      text.textContent = h.text;
+      div.append(head, text);
+      retrievedBox.appendChild(div);
+    });
+  }
+
+  function renderMeta(data) {
+    const parts = [];
+    if (data.model) parts.push(`модель: ${data.model}`);
+    const e = data.elapsed || {};
+    if (e.retrieval !== undefined) parts.push(`пошук: ${(e.retrieval * 1000).toFixed(0)} мс`);
+    if (e.generation !== undefined) parts.push(`генерація: ${Number(e.generation).toFixed(2)} с`);
+    if (data.usage) {
+      const u = data.usage;
+      parts.push(`токени: ${u.prompt_tokens ?? '?'} у запиті, ${u.completion_tokens ?? '?'} у відповіді`);
+    }
+    meta.textContent = parts.join(' · ');
+  }
+
+  function showError(message) {
+    badge.innerHTML = '';
+    answerBox.className = 'error';
+    answerBox.textContent = message;
+    meta.textContent = '';
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const question = document.getElementById('question').value.trim();
+    if (!question) return;
+    send.disabled = true;
+    answerBox.className = 'empty';
+    answerBox.textContent = 'Шукаю фрагменти й питаю модель…';
+    try {
+      const response = await fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, filters: filters() }),
+      });
+      const data = await response.json();
+      if (!response.ok) { showError(data.detail || `Помилка ${response.status}`); return; }
+      badge.innerHTML = '<span class="badge"></span>';
+      const b = badge.firstChild;
+      b.classList.add(data.found ? 'found' : 'missing');
+      b.textContent = data.found ? 'відповідь за базою знань' : 'у базі знань відповіді немає';
+      answerBox.className = '';
+      answerBox.textContent = data.answer ?? JSON.stringify(data, null, 2);
+      renderSources(data.sources);
+      renderRetrieved(data.retrieved);
+      renderMeta(data);
+    } catch {
+      showError('Не вдалося звʼязатися із застосунком.');
+    } finally {
+      send.disabled = false;
+    }
+  });
+
+  loadStatus();
+</script>

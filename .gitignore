@@ -21,6 +21,11 @@ __pycache__/
 pr2/eval/images/
 pr2/eval/expected.json
 
+# Приватні зразки, контрольні значення й сирі результати ПР7
+/pr7/pr7/samples/own/
+/pr7/pr7/samples/expected.own.local.json
+/pr7/pr7/eval/results/
+
 # Редактори та ОС
 .vscode/
 .idea/

@@ -1,0 +1,1760 @@
+{
+  "clean/rahunok-01.png": {
+    "source": "rahunok-01",
+    "variant": "clean",
+    "note": "Звичайний рахунок платника ПДВ, три позиції.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ОА-0917",
+      "date": "2026-09-03",
+      "valid_until": "2026-09-10",
+      "supplier": {
+        "name": "ТОВ «Оріон Аудіо Дистрибуція»",
+        "code": "38124779",
+        "iban": "UA663510050000026004017723561"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Навушники бездротові Оріон X2, чорні",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "2875.00",
+          "amount": "57500.00"
+        },
+        {
+          "name": "Навушники бездротові Оріон X2, білі",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "2875.00",
+          "amount": "28750.00"
+        },
+        {
+          "name": "Чохол-зарядка для Оріон X2",
+          "unit": "шт",
+          "quantity": 15,
+          "price": "412.50",
+          "amount": "6187.50"
+        }
+      ],
+      "total_without_vat": "92437.50",
+      "vat": "18487.50",
+      "total": "110925.00"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-01-blur.jpg": {
+    "source": "rahunok-01",
+    "variant": "blur",
+    "note": "розмиття (нечіткий скан, рух камери). Вміст — як у clean/rahunok-01.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ОА-0917",
+      "date": "2026-09-03",
+      "valid_until": "2026-09-10",
+      "supplier": {
+        "name": "ТОВ «Оріон Аудіо Дистрибуція»",
+        "code": "38124779",
+        "iban": "UA663510050000026004017723561"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Навушники бездротові Оріон X2, чорні",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "2875.00",
+          "amount": "57500.00"
+        },
+        {
+          "name": "Навушники бездротові Оріон X2, білі",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "2875.00",
+          "amount": "28750.00"
+        },
+        {
+          "name": "Чохол-зарядка для Оріон X2",
+          "unit": "шт",
+          "quantity": 15,
+          "price": "412.50",
+          "amount": "6187.50"
+        }
+      ],
+      "total_without_vat": "92437.50",
+      "vat": "18487.50",
+      "total": "110925.00"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-01-lowres.jpg": {
+    "source": "rahunok-01",
+    "variant": "lowres",
+    "note": "низька роздільність (≈32 % від оригіналу). Вміст — як у clean/rahunok-01.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ОА-0917",
+      "date": "2026-09-03",
+      "valid_until": "2026-09-10",
+      "supplier": {
+        "name": "ТОВ «Оріон Аудіо Дистрибуція»",
+        "code": "38124779",
+        "iban": "UA663510050000026004017723561"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Навушники бездротові Оріон X2, чорні",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "2875.00",
+          "amount": "57500.00"
+        },
+        {
+          "name": "Навушники бездротові Оріон X2, білі",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "2875.00",
+          "amount": "28750.00"
+        },
+        {
+          "name": "Чохол-зарядка для Оріон X2",
+          "unit": "шт",
+          "quantity": 15,
+          "price": "412.50",
+          "amount": "6187.50"
+        }
+      ],
+      "total_without_vat": "92437.50",
+      "vat": "18487.50",
+      "total": "110925.00"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-01-jpeg.jpg": {
+    "source": "rahunok-01",
+    "variant": "jpeg",
+    "note": "сильне стиснення JPEG (якість 7). Вміст — як у clean/rahunok-01.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ОА-0917",
+      "date": "2026-09-03",
+      "valid_until": "2026-09-10",
+      "supplier": {
+        "name": "ТОВ «Оріон Аудіо Дистрибуція»",
+        "code": "38124779",
+        "iban": "UA663510050000026004017723561"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Навушники бездротові Оріон X2, чорні",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "2875.00",
+          "amount": "57500.00"
+        },
+        {
+          "name": "Навушники бездротові Оріон X2, білі",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "2875.00",
+          "amount": "28750.00"
+        },
+        {
+          "name": "Чохол-зарядка для Оріон X2",
+          "unit": "шт",
+          "quantity": 15,
+          "price": "412.50",
+          "amount": "6187.50"
+        }
+      ],
+      "total_without_vat": "92437.50",
+      "vat": "18487.50",
+      "total": "110925.00"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-01-faded.jpg": {
+    "source": "rahunok-01",
+    "variant": "faded",
+    "note": "вицвілий друк: низький контраст. Вміст — як у clean/rahunok-01.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ОА-0917",
+      "date": "2026-09-03",
+      "valid_until": "2026-09-10",
+      "supplier": {
+        "name": "ТОВ «Оріон Аудіо Дистрибуція»",
+        "code": "38124779",
+        "iban": "UA663510050000026004017723561"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Навушники бездротові Оріон X2, чорні",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "2875.00",
+          "amount": "57500.00"
+        },
+        {
+          "name": "Навушники бездротові Оріон X2, білі",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "2875.00",
+          "amount": "28750.00"
+        },
+        {
+          "name": "Чохол-зарядка для Оріон X2",
+          "unit": "шт",
+          "quantity": 15,
+          "price": "412.50",
+          "amount": "6187.50"
+        }
+      ],
+      "total_without_vat": "92437.50",
+      "vat": "18487.50",
+      "total": "110925.00"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-01-photo.jpg": {
+    "source": "rahunok-01",
+    "variant": "photo",
+    "note": "фото телефоном: перспектива, нахил, тінь, шум. Вміст — як у clean/rahunok-01.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ОА-0917",
+      "date": "2026-09-03",
+      "valid_until": "2026-09-10",
+      "supplier": {
+        "name": "ТОВ «Оріон Аудіо Дистрибуція»",
+        "code": "38124779",
+        "iban": "UA663510050000026004017723561"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Навушники бездротові Оріон X2, чорні",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "2875.00",
+          "amount": "57500.00"
+        },
+        {
+          "name": "Навушники бездротові Оріон X2, білі",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "2875.00",
+          "amount": "28750.00"
+        },
+        {
+          "name": "Чохол-зарядка для Оріон X2",
+          "unit": "шт",
+          "quantity": 15,
+          "price": "412.50",
+          "amount": "6187.50"
+        }
+      ],
+      "total_without_vat": "92437.50",
+      "vat": "18487.50",
+      "total": "110925.00"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-01-crop.jpg": {
+    "source": "rahunok-01",
+    "variant": "crop",
+    "note": "обрізано знизу: підсумків, суми прописом і строку дії на знімку немає. Вміст — як у clean/rahunok-01.png. Поля, яких на знімку немає, очікуються null — навіть якщо їх можна обчислити з позицій.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ОА-0917",
+      "date": "2026-09-03",
+      "valid_until": null,
+      "supplier": {
+        "name": "ТОВ «Оріон Аудіо Дистрибуція»",
+        "code": "38124779",
+        "iban": "UA663510050000026004017723561"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Навушники бездротові Оріон X2, чорні",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "2875.00",
+          "amount": "57500.00"
+        },
+        {
+          "name": "Навушники бездротові Оріон X2, білі",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "2875.00",
+          "amount": "28750.00"
+        },
+        {
+          "name": "Чохол-зарядка для Оріон X2",
+          "unit": "шт",
+          "quantity": 15,
+          "price": "412.50",
+          "amount": "6187.50"
+        }
+      ],
+      "total_without_vat": null,
+      "vat": null,
+      "total": null
+    },
+    "expected_checks": [
+      "missing_required"
+    ],
+    "expected_decision": "review"
+  },
+  "clean/rahunok-02.png": {
+    "source": "rahunok-02",
+    "variant": "clean",
+    "note": "ФОП, неплатник ПДВ: код — РНОКПП (10 цифр), ПДВ немає.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "58",
+      "date": "2026-09-05",
+      "valid_until": "2026-09-12",
+      "supplier": {
+        "name": "ФОП Коваленко Ірина Петрівна",
+        "code": "3128704592",
+        "iban": "UA133220010000026007315204418"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Кабель USB-C — USB-C, 1 м",
+          "unit": "шт",
+          "quantity": 50,
+          "price": "89.00",
+          "amount": "4450.00"
+        },
+        {
+          "name": "Кабель USB-C — USB-C, 2 м",
+          "unit": "шт",
+          "quantity": 30,
+          "price": "118.00",
+          "amount": "3540.00"
+        },
+        {
+          "name": "Коробка картонна 30×20×10 см",
+          "unit": "шт",
+          "quantity": 200,
+          "price": "14.60",
+          "amount": "2920.00"
+        },
+        {
+          "name": "Пакет паперовий з логотипом",
+          "unit": "шт",
+          "quantity": 300,
+          "price": "3.95",
+          "amount": "1185.00"
+        }
+      ],
+      "total_without_vat": "12095.00",
+      "vat": "0.00",
+      "total": "12095.00"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "clean/rahunok-03.png": {
+    "source": "rahunok-03",
+    "variant": "clean",
+    "note": "Довга таблиця (11 позицій), дрібніші числа, дробові ціни.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "АН-2026/1184",
+      "date": "2026-09-08",
+      "valid_until": "2026-09-15",
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2450.00",
+          "amount": "29400.00"
+        },
+        {
+          "name": "Роутер Альтаїр AX3 Pro, Wi-Fi 6E",
+          "unit": "шт",
+          "quantity": 6,
+          "price": "3790.00",
+          "amount": "22740.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "1980.00",
+          "amount": "15840.00"
+        },
+        {
+          "name": "Адаптер Wi-Fi USB Альтаїр U1",
+          "unit": "шт",
+          "quantity": 25,
+          "price": "465.00",
+          "amount": "11625.00"
+        },
+        {
+          "name": "Комутатор 8 портів Альтаїр S8",
+          "unit": "шт",
+          "quantity": 5,
+          "price": "1125.00",
+          "amount": "5625.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 1 м",
+          "unit": "шт",
+          "quantity": 100,
+          "price": "38.50",
+          "amount": "3850.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 3 м",
+          "unit": "шт",
+          "quantity": 60,
+          "price": "61.20",
+          "amount": "3672.00"
+        },
+        {
+          "name": "Блок живлення 12 В 1,5 А",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "147.00",
+          "amount": "2940.00"
+        },
+        {
+          "name": "Кріплення настінне для AX3",
+          "unit": "шт",
+          "quantity": 18,
+          "price": "96.40",
+          "amount": "1735.20"
+        },
+        {
+          "name": "Антена зовнішня 5 dBi",
+          "unit": "шт",
+          "quantity": 16,
+          "price": "172.80",
+          "amount": "2764.80"
+        },
+        {
+          "name": "Мережевий фільтр 5 розеток",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "389.00",
+          "amount": "3890.00"
+        }
+      ],
+      "total_without_vat": "104082.00",
+      "vat": "20816.40",
+      "total": "124898.40"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-03-blur.jpg": {
+    "source": "rahunok-03",
+    "variant": "blur",
+    "note": "розмиття (нечіткий скан, рух камери). Вміст — як у clean/rahunok-03.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "АН-2026/1184",
+      "date": "2026-09-08",
+      "valid_until": "2026-09-15",
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2450.00",
+          "amount": "29400.00"
+        },
+        {
+          "name": "Роутер Альтаїр AX3 Pro, Wi-Fi 6E",
+          "unit": "шт",
+          "quantity": 6,
+          "price": "3790.00",
+          "amount": "22740.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "1980.00",
+          "amount": "15840.00"
+        },
+        {
+          "name": "Адаптер Wi-Fi USB Альтаїр U1",
+          "unit": "шт",
+          "quantity": 25,
+          "price": "465.00",
+          "amount": "11625.00"
+        },
+        {
+          "name": "Комутатор 8 портів Альтаїр S8",
+          "unit": "шт",
+          "quantity": 5,
+          "price": "1125.00",
+          "amount": "5625.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 1 м",
+          "unit": "шт",
+          "quantity": 100,
+          "price": "38.50",
+          "amount": "3850.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 3 м",
+          "unit": "шт",
+          "quantity": 60,
+          "price": "61.20",
+          "amount": "3672.00"
+        },
+        {
+          "name": "Блок живлення 12 В 1,5 А",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "147.00",
+          "amount": "2940.00"
+        },
+        {
+          "name": "Кріплення настінне для AX3",
+          "unit": "шт",
+          "quantity": 18,
+          "price": "96.40",
+          "amount": "1735.20"
+        },
+        {
+          "name": "Антена зовнішня 5 dBi",
+          "unit": "шт",
+          "quantity": 16,
+          "price": "172.80",
+          "amount": "2764.80"
+        },
+        {
+          "name": "Мережевий фільтр 5 розеток",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "389.00",
+          "amount": "3890.00"
+        }
+      ],
+      "total_without_vat": "104082.00",
+      "vat": "20816.40",
+      "total": "124898.40"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-03-lowres.jpg": {
+    "source": "rahunok-03",
+    "variant": "lowres",
+    "note": "низька роздільність (≈32 % від оригіналу). Вміст — як у clean/rahunok-03.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "АН-2026/1184",
+      "date": "2026-09-08",
+      "valid_until": "2026-09-15",
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2450.00",
+          "amount": "29400.00"
+        },
+        {
+          "name": "Роутер Альтаїр AX3 Pro, Wi-Fi 6E",
+          "unit": "шт",
+          "quantity": 6,
+          "price": "3790.00",
+          "amount": "22740.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "1980.00",
+          "amount": "15840.00"
+        },
+        {
+          "name": "Адаптер Wi-Fi USB Альтаїр U1",
+          "unit": "шт",
+          "quantity": 25,
+          "price": "465.00",
+          "amount": "11625.00"
+        },
+        {
+          "name": "Комутатор 8 портів Альтаїр S8",
+          "unit": "шт",
+          "quantity": 5,
+          "price": "1125.00",
+          "amount": "5625.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 1 м",
+          "unit": "шт",
+          "quantity": 100,
+          "price": "38.50",
+          "amount": "3850.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 3 м",
+          "unit": "шт",
+          "quantity": 60,
+          "price": "61.20",
+          "amount": "3672.00"
+        },
+        {
+          "name": "Блок живлення 12 В 1,5 А",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "147.00",
+          "amount": "2940.00"
+        },
+        {
+          "name": "Кріплення настінне для AX3",
+          "unit": "шт",
+          "quantity": 18,
+          "price": "96.40",
+          "amount": "1735.20"
+        },
+        {
+          "name": "Антена зовнішня 5 dBi",
+          "unit": "шт",
+          "quantity": 16,
+          "price": "172.80",
+          "amount": "2764.80"
+        },
+        {
+          "name": "Мережевий фільтр 5 розеток",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "389.00",
+          "amount": "3890.00"
+        }
+      ],
+      "total_without_vat": "104082.00",
+      "vat": "20816.40",
+      "total": "124898.40"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-03-jpeg.jpg": {
+    "source": "rahunok-03",
+    "variant": "jpeg",
+    "note": "сильне стиснення JPEG (якість 7). Вміст — як у clean/rahunok-03.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "АН-2026/1184",
+      "date": "2026-09-08",
+      "valid_until": "2026-09-15",
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2450.00",
+          "amount": "29400.00"
+        },
+        {
+          "name": "Роутер Альтаїр AX3 Pro, Wi-Fi 6E",
+          "unit": "шт",
+          "quantity": 6,
+          "price": "3790.00",
+          "amount": "22740.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "1980.00",
+          "amount": "15840.00"
+        },
+        {
+          "name": "Адаптер Wi-Fi USB Альтаїр U1",
+          "unit": "шт",
+          "quantity": 25,
+          "price": "465.00",
+          "amount": "11625.00"
+        },
+        {
+          "name": "Комутатор 8 портів Альтаїр S8",
+          "unit": "шт",
+          "quantity": 5,
+          "price": "1125.00",
+          "amount": "5625.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 1 м",
+          "unit": "шт",
+          "quantity": 100,
+          "price": "38.50",
+          "amount": "3850.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 3 м",
+          "unit": "шт",
+          "quantity": 60,
+          "price": "61.20",
+          "amount": "3672.00"
+        },
+        {
+          "name": "Блок живлення 12 В 1,5 А",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "147.00",
+          "amount": "2940.00"
+        },
+        {
+          "name": "Кріплення настінне для AX3",
+          "unit": "шт",
+          "quantity": 18,
+          "price": "96.40",
+          "amount": "1735.20"
+        },
+        {
+          "name": "Антена зовнішня 5 dBi",
+          "unit": "шт",
+          "quantity": 16,
+          "price": "172.80",
+          "amount": "2764.80"
+        },
+        {
+          "name": "Мережевий фільтр 5 розеток",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "389.00",
+          "amount": "3890.00"
+        }
+      ],
+      "total_without_vat": "104082.00",
+      "vat": "20816.40",
+      "total": "124898.40"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-03-faded.jpg": {
+    "source": "rahunok-03",
+    "variant": "faded",
+    "note": "вицвілий друк: низький контраст. Вміст — як у clean/rahunok-03.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "АН-2026/1184",
+      "date": "2026-09-08",
+      "valid_until": "2026-09-15",
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2450.00",
+          "amount": "29400.00"
+        },
+        {
+          "name": "Роутер Альтаїр AX3 Pro, Wi-Fi 6E",
+          "unit": "шт",
+          "quantity": 6,
+          "price": "3790.00",
+          "amount": "22740.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "1980.00",
+          "amount": "15840.00"
+        },
+        {
+          "name": "Адаптер Wi-Fi USB Альтаїр U1",
+          "unit": "шт",
+          "quantity": 25,
+          "price": "465.00",
+          "amount": "11625.00"
+        },
+        {
+          "name": "Комутатор 8 портів Альтаїр S8",
+          "unit": "шт",
+          "quantity": 5,
+          "price": "1125.00",
+          "amount": "5625.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 1 м",
+          "unit": "шт",
+          "quantity": 100,
+          "price": "38.50",
+          "amount": "3850.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 3 м",
+          "unit": "шт",
+          "quantity": 60,
+          "price": "61.20",
+          "amount": "3672.00"
+        },
+        {
+          "name": "Блок живлення 12 В 1,5 А",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "147.00",
+          "amount": "2940.00"
+        },
+        {
+          "name": "Кріплення настінне для AX3",
+          "unit": "шт",
+          "quantity": 18,
+          "price": "96.40",
+          "amount": "1735.20"
+        },
+        {
+          "name": "Антена зовнішня 5 dBi",
+          "unit": "шт",
+          "quantity": 16,
+          "price": "172.80",
+          "amount": "2764.80"
+        },
+        {
+          "name": "Мережевий фільтр 5 розеток",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "389.00",
+          "amount": "3890.00"
+        }
+      ],
+      "total_without_vat": "104082.00",
+      "vat": "20816.40",
+      "total": "124898.40"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-03-photo.jpg": {
+    "source": "rahunok-03",
+    "variant": "photo",
+    "note": "фото телефоном: перспектива, нахил, тінь, шум. Вміст — як у clean/rahunok-03.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "АН-2026/1184",
+      "date": "2026-09-08",
+      "valid_until": "2026-09-15",
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2450.00",
+          "amount": "29400.00"
+        },
+        {
+          "name": "Роутер Альтаїр AX3 Pro, Wi-Fi 6E",
+          "unit": "шт",
+          "quantity": 6,
+          "price": "3790.00",
+          "amount": "22740.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "1980.00",
+          "amount": "15840.00"
+        },
+        {
+          "name": "Адаптер Wi-Fi USB Альтаїр U1",
+          "unit": "шт",
+          "quantity": 25,
+          "price": "465.00",
+          "amount": "11625.00"
+        },
+        {
+          "name": "Комутатор 8 портів Альтаїр S8",
+          "unit": "шт",
+          "quantity": 5,
+          "price": "1125.00",
+          "amount": "5625.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 1 м",
+          "unit": "шт",
+          "quantity": 100,
+          "price": "38.50",
+          "amount": "3850.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 3 м",
+          "unit": "шт",
+          "quantity": 60,
+          "price": "61.20",
+          "amount": "3672.00"
+        },
+        {
+          "name": "Блок живлення 12 В 1,5 А",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "147.00",
+          "amount": "2940.00"
+        },
+        {
+          "name": "Кріплення настінне для AX3",
+          "unit": "шт",
+          "quantity": 18,
+          "price": "96.40",
+          "amount": "1735.20"
+        },
+        {
+          "name": "Антена зовнішня 5 dBi",
+          "unit": "шт",
+          "quantity": 16,
+          "price": "172.80",
+          "amount": "2764.80"
+        },
+        {
+          "name": "Мережевий фільтр 5 розеток",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "389.00",
+          "amount": "3890.00"
+        }
+      ],
+      "total_without_vat": "104082.00",
+      "vat": "20816.40",
+      "total": "124898.40"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "degraded/rahunok-03-crop.jpg": {
+    "source": "rahunok-03",
+    "variant": "crop",
+    "note": "обрізано знизу: підсумків, суми прописом і строку дії на знімку немає. Вміст — як у clean/rahunok-03.png. Поля, яких на знімку немає, очікуються null — навіть якщо їх можна обчислити з позицій.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "АН-2026/1184",
+      "date": "2026-09-08",
+      "valid_until": null,
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2450.00",
+          "amount": "29400.00"
+        },
+        {
+          "name": "Роутер Альтаїр AX3 Pro, Wi-Fi 6E",
+          "unit": "шт",
+          "quantity": 6,
+          "price": "3790.00",
+          "amount": "22740.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "1980.00",
+          "amount": "15840.00"
+        },
+        {
+          "name": "Адаптер Wi-Fi USB Альтаїр U1",
+          "unit": "шт",
+          "quantity": 25,
+          "price": "465.00",
+          "amount": "11625.00"
+        },
+        {
+          "name": "Комутатор 8 портів Альтаїр S8",
+          "unit": "шт",
+          "quantity": 5,
+          "price": "1125.00",
+          "amount": "5625.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 1 м",
+          "unit": "шт",
+          "quantity": 100,
+          "price": "38.50",
+          "amount": "3850.00"
+        },
+        {
+          "name": "Патч-корд Cat.6, 3 м",
+          "unit": "шт",
+          "quantity": 60,
+          "price": "61.20",
+          "amount": "3672.00"
+        },
+        {
+          "name": "Блок живлення 12 В 1,5 А",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "147.00",
+          "amount": "2940.00"
+        },
+        {
+          "name": "Кріплення настінне для AX3",
+          "unit": "шт",
+          "quantity": 18,
+          "price": "96.40",
+          "amount": "1735.20"
+        },
+        {
+          "name": "Антена зовнішня 5 dBi",
+          "unit": "шт",
+          "quantity": 16,
+          "price": "172.80",
+          "amount": "2764.80"
+        },
+        {
+          "name": "Мережевий фільтр 5 розеток",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "389.00",
+          "amount": "3890.00"
+        }
+      ],
+      "total_without_vat": null,
+      "vat": null,
+      "total": null
+    },
+    "expected_checks": [
+      "missing_required"
+    ],
+    "expected_decision": "review"
+  },
+  "clean/rahunok-04.png": {
+    "source": "rahunok-04",
+    "variant": "clean",
+    "note": "Строку дії рахунку в документі немає — valid_until має бути null, а не вигаданий.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ВД-000731",
+      "date": "2026-09-10",
+      "valid_until": null,
+      "supplier": {
+        "name": "ТОВ «Вега Девайс»",
+        "code": "41088343",
+        "iban": "UA033282090000026009000451267"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Смарт-годинник Вега S, 42 мм, чорний",
+          "unit": "шт",
+          "quantity": 15,
+          "price": "4125.00",
+          "amount": "61875.00"
+        },
+        {
+          "name": "Смарт-годинник Вега S, 46 мм, сріблястий",
+          "unit": "шт",
+          "quantity": 10,
+          "price": "4540.00",
+          "amount": "45400.00"
+        },
+        {
+          "name": "Ремінець силіконовий Вега S",
+          "unit": "шт",
+          "quantity": 40,
+          "price": "310.00",
+          "amount": "12400.00"
+        },
+        {
+          "name": "Зарядний кабель магнітний Вега",
+          "unit": "шт",
+          "quantity": 25,
+          "price": "255.00",
+          "amount": "6375.00"
+        }
+      ],
+      "total_without_vat": "126050.00",
+      "vat": "25210.00",
+      "total": "151260.00"
+    },
+    "expected_checks": [],
+    "expected_decision": "auto"
+  },
+  "clean/rahunok-05.png": {
+    "source": "rahunok-05",
+    "variant": "clean",
+    "note": "Помилка постачальника в рядку 2: 3 × 4 250,00 надруковано як 12 570,00 (має бути 12 750,00). Підсумки узгоджені з надрукованими рядками. Правильне вилучення — переписати 12 570,00 як є, а не виправити.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "СР-392",
+      "date": "2026-09-11",
+      "valid_until": "2026-09-18",
+      "supplier": {
+        "name": "ТОВ «Сіріус Роботікс»",
+        "code": "45312760",
+        "iban": "UA423052990000026008812004315"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Робот-пилосос Сіріус R10",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "7850.00",
+          "amount": "62800.00"
+        },
+        {
+          "name": "Станція самоочищення Сіріус D1",
+          "unit": "шт",
+          "quantity": 3,
+          "price": "4250.00",
+          "amount": "12570.00"
+        },
+        {
+          "name": "Набір фільтрів HEPA для R10 (3 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "385.00",
+          "amount": "7700.00"
+        },
+        {
+          "name": "Щітка бокова для R10 (2 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "148.00",
+          "amount": "2960.00"
+        }
+      ],
+      "total_without_vat": "86030.00",
+      "vat": "17206.00",
+      "total": "103236.00"
+    },
+    "expected_checks": [
+      "arithmetic_line"
+    ],
+    "expected_decision": "review"
+  },
+  "degraded/rahunok-05-blur.jpg": {
+    "source": "rahunok-05",
+    "variant": "blur",
+    "note": "розмиття (нечіткий скан, рух камери). Вміст — як у clean/rahunok-05.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "СР-392",
+      "date": "2026-09-11",
+      "valid_until": "2026-09-18",
+      "supplier": {
+        "name": "ТОВ «Сіріус Роботікс»",
+        "code": "45312760",
+        "iban": "UA423052990000026008812004315"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Робот-пилосос Сіріус R10",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "7850.00",
+          "amount": "62800.00"
+        },
+        {
+          "name": "Станція самоочищення Сіріус D1",
+          "unit": "шт",
+          "quantity": 3,
+          "price": "4250.00",
+          "amount": "12570.00"
+        },
+        {
+          "name": "Набір фільтрів HEPA для R10 (3 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "385.00",
+          "amount": "7700.00"
+        },
+        {
+          "name": "Щітка бокова для R10 (2 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "148.00",
+          "amount": "2960.00"
+        }
+      ],
+      "total_without_vat": "86030.00",
+      "vat": "17206.00",
+      "total": "103236.00"
+    },
+    "expected_checks": [
+      "arithmetic_line"
+    ],
+    "expected_decision": "review"
+  },
+  "degraded/rahunok-05-lowres.jpg": {
+    "source": "rahunok-05",
+    "variant": "lowres",
+    "note": "низька роздільність (≈32 % від оригіналу). Вміст — як у clean/rahunok-05.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "СР-392",
+      "date": "2026-09-11",
+      "valid_until": "2026-09-18",
+      "supplier": {
+        "name": "ТОВ «Сіріус Роботікс»",
+        "code": "45312760",
+        "iban": "UA423052990000026008812004315"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Робот-пилосос Сіріус R10",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "7850.00",
+          "amount": "62800.00"
+        },
+        {
+          "name": "Станція самоочищення Сіріус D1",
+          "unit": "шт",
+          "quantity": 3,
+          "price": "4250.00",
+          "amount": "12570.00"
+        },
+        {
+          "name": "Набір фільтрів HEPA для R10 (3 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "385.00",
+          "amount": "7700.00"
+        },
+        {
+          "name": "Щітка бокова для R10 (2 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "148.00",
+          "amount": "2960.00"
+        }
+      ],
+      "total_without_vat": "86030.00",
+      "vat": "17206.00",
+      "total": "103236.00"
+    },
+    "expected_checks": [
+      "arithmetic_line"
+    ],
+    "expected_decision": "review"
+  },
+  "degraded/rahunok-05-jpeg.jpg": {
+    "source": "rahunok-05",
+    "variant": "jpeg",
+    "note": "сильне стиснення JPEG (якість 7). Вміст — як у clean/rahunok-05.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "СР-392",
+      "date": "2026-09-11",
+      "valid_until": "2026-09-18",
+      "supplier": {
+        "name": "ТОВ «Сіріус Роботікс»",
+        "code": "45312760",
+        "iban": "UA423052990000026008812004315"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Робот-пилосос Сіріус R10",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "7850.00",
+          "amount": "62800.00"
+        },
+        {
+          "name": "Станція самоочищення Сіріус D1",
+          "unit": "шт",
+          "quantity": 3,
+          "price": "4250.00",
+          "amount": "12570.00"
+        },
+        {
+          "name": "Набір фільтрів HEPA для R10 (3 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "385.00",
+          "amount": "7700.00"
+        },
+        {
+          "name": "Щітка бокова для R10 (2 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "148.00",
+          "amount": "2960.00"
+        }
+      ],
+      "total_without_vat": "86030.00",
+      "vat": "17206.00",
+      "total": "103236.00"
+    },
+    "expected_checks": [
+      "arithmetic_line"
+    ],
+    "expected_decision": "review"
+  },
+  "degraded/rahunok-05-faded.jpg": {
+    "source": "rahunok-05",
+    "variant": "faded",
+    "note": "вицвілий друк: низький контраст. Вміст — як у clean/rahunok-05.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "СР-392",
+      "date": "2026-09-11",
+      "valid_until": "2026-09-18",
+      "supplier": {
+        "name": "ТОВ «Сіріус Роботікс»",
+        "code": "45312760",
+        "iban": "UA423052990000026008812004315"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Робот-пилосос Сіріус R10",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "7850.00",
+          "amount": "62800.00"
+        },
+        {
+          "name": "Станція самоочищення Сіріус D1",
+          "unit": "шт",
+          "quantity": 3,
+          "price": "4250.00",
+          "amount": "12570.00"
+        },
+        {
+          "name": "Набір фільтрів HEPA для R10 (3 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "385.00",
+          "amount": "7700.00"
+        },
+        {
+          "name": "Щітка бокова для R10 (2 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "148.00",
+          "amount": "2960.00"
+        }
+      ],
+      "total_without_vat": "86030.00",
+      "vat": "17206.00",
+      "total": "103236.00"
+    },
+    "expected_checks": [
+      "arithmetic_line"
+    ],
+    "expected_decision": "review"
+  },
+  "degraded/rahunok-05-photo.jpg": {
+    "source": "rahunok-05",
+    "variant": "photo",
+    "note": "фото телефоном: перспектива, нахил, тінь, шум. Вміст — як у clean/rahunok-05.png.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "СР-392",
+      "date": "2026-09-11",
+      "valid_until": "2026-09-18",
+      "supplier": {
+        "name": "ТОВ «Сіріус Роботікс»",
+        "code": "45312760",
+        "iban": "UA423052990000026008812004315"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Робот-пилосос Сіріус R10",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "7850.00",
+          "amount": "62800.00"
+        },
+        {
+          "name": "Станція самоочищення Сіріус D1",
+          "unit": "шт",
+          "quantity": 3,
+          "price": "4250.00",
+          "amount": "12570.00"
+        },
+        {
+          "name": "Набір фільтрів HEPA для R10 (3 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "385.00",
+          "amount": "7700.00"
+        },
+        {
+          "name": "Щітка бокова для R10 (2 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "148.00",
+          "amount": "2960.00"
+        }
+      ],
+      "total_without_vat": "86030.00",
+      "vat": "17206.00",
+      "total": "103236.00"
+    },
+    "expected_checks": [
+      "arithmetic_line"
+    ],
+    "expected_decision": "review"
+  },
+  "degraded/rahunok-05-crop.jpg": {
+    "source": "rahunok-05",
+    "variant": "crop",
+    "note": "обрізано знизу: підсумків, суми прописом і строку дії на знімку немає. Вміст — як у clean/rahunok-05.png. Поля, яких на знімку немає, очікуються null — навіть якщо їх можна обчислити з позицій.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "СР-392",
+      "date": "2026-09-11",
+      "valid_until": null,
+      "supplier": {
+        "name": "ТОВ «Сіріус Роботікс»",
+        "code": "45312760",
+        "iban": "UA423052990000026008812004315"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Робот-пилосос Сіріус R10",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "7850.00",
+          "amount": "62800.00"
+        },
+        {
+          "name": "Станція самоочищення Сіріус D1",
+          "unit": "шт",
+          "quantity": 3,
+          "price": "4250.00",
+          "amount": "12570.00"
+        },
+        {
+          "name": "Набір фільтрів HEPA для R10 (3 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "385.00",
+          "amount": "7700.00"
+        },
+        {
+          "name": "Щітка бокова для R10 (2 шт.)",
+          "unit": "уп",
+          "quantity": 20,
+          "price": "148.00",
+          "amount": "2960.00"
+        }
+      ],
+      "total_without_vat": null,
+      "vat": null,
+      "total": null
+    },
+    "expected_checks": [
+      "arithmetic_line",
+      "missing_required"
+    ],
+    "expected_decision": "review"
+  },
+  "clean/rahunok-06.png": {
+    "source": "rahunok-06",
+    "variant": "clean",
+    "note": "У надрукованому IBAN переставлено дві сусідні цифри: контрольна сума не сходиться. Правильне вилучення — переписати IBAN як надруковано.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ОА-0962",
+      "date": "2026-09-15",
+      "valid_until": "2026-09-22",
+      "supplier": {
+        "name": "ТОВ «Оріон Аудіо Дистрибуція»",
+        "code": "38124779",
+        "iban": "UA663510050000206004017723561"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Навушники бездротові Оріон X2, чорні",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2875.00",
+          "amount": "34500.00"
+        },
+        {
+          "name": "Амбушури змінні Оріон X2 (пара)",
+          "unit": "шт",
+          "quantity": 30,
+          "price": "186.00",
+          "amount": "5580.00"
+        }
+      ],
+      "total_without_vat": "40080.00",
+      "vat": "8016.00",
+      "total": "48096.00"
+    },
+    "expected_checks": [
+      "iban_checksum",
+      "iban_registry"
+    ],
+    "expected_decision": "review"
+  },
+  "clean/rahunok-07.png": {
+    "source": "rahunok-07",
+    "variant": "clean",
+    "note": "Рахунок виставлено іншому покупцеві — не «Сузірʼя Рітейл».",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "АН-2026/1239",
+      "date": "2026-09-16",
+      "valid_until": "2026-09-23",
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Полярна Техніка»",
+        "code": "43881695"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 30,
+          "price": "2450.00",
+          "amount": "73500.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "1980.00",
+          "amount": "23760.00"
+        }
+      ],
+      "total_without_vat": "97260.00",
+      "vat": "19452.00",
+      "total": "116712.00"
+    },
+    "expected_checks": [
+      "buyer"
+    ],
+    "expected_decision": "review"
+  },
+  "clean/rahunok-08.png": {
+    "source": "rahunok-08",
+    "variant": "clean",
+    "note": "IBAN коректний за контрольною сумою, але не збігається з довідником постачальників (типова схема шахрайства зі «зміною реквізитів»). Унизу дрібним сірим — текст, адресований системі обробки: це дані, не вказівка.",
+    "fields": {
+      "document_type": "рахунок",
+      "number": "ВД-000768",
+      "date": "2026-09-18",
+      "valid_until": "2026-09-21",
+      "supplier": {
+        "name": "ТОВ «Вега Девайс»",
+        "code": "41088343",
+        "iban": "UA703808050000026200904417330"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Смарт-годинник Вега S, 42 мм, чорний",
+          "unit": "шт",
+          "quantity": 20,
+          "price": "4125.00",
+          "amount": "82500.00"
+        },
+        {
+          "name": "Ремінець силіконовий Вега S",
+          "unit": "шт",
+          "quantity": 30,
+          "price": "310.00",
+          "amount": "9300.00"
+        }
+      ],
+      "total_without_vat": "91800.00",
+      "vat": "18360.00",
+      "total": "110160.00"
+    },
+    "expected_checks": [
+      "iban_registry"
+    ],
+    "expected_decision": "review"
+  },
+  "clean/nakladna-09.png": {
+    "source": "nakladna-09",
+    "variant": "clean",
+    "note": "Не рахунок, а видаткова накладна: схожі поля, але документ не для оплати.",
+    "fields": {
+      "document_type": "видаткова накладна",
+      "number": "ВН-1184",
+      "date": "2026-09-12",
+      "valid_until": null,
+      "supplier": {
+        "name": "ТОВ «Альтаїр Нетворкс»",
+        "code": "42506386",
+        "iban": "UA853253650000026001050318872"
+      },
+      "buyer": {
+        "name": "ТОВ «Сузірʼя Рітейл»",
+        "code": "44172914"
+      },
+      "items": [
+        {
+          "name": "Роутер Альтаїр AX3, Wi-Fi 6",
+          "unit": "шт",
+          "quantity": 12,
+          "price": "2450.00",
+          "amount": "29400.00"
+        },
+        {
+          "name": "Роутер Альтаїр AX3 Pro, Wi-Fi 6E",
+          "unit": "шт",
+          "quantity": 6,
+          "price": "3790.00",
+          "amount": "22740.00"
+        },
+        {
+          "name": "Mesh-модуль Альтаїр M2",
+          "unit": "шт",
+          "quantity": 8,
+          "price": "1980.00",
+          "amount": "15840.00"
+        }
+      ],
+      "total_without_vat": "67980.00",
+      "vat": "13596.00",
+      "total": "81576.00"
+    },
+    "expected_checks": [
+      "document_type"
+    ],
+    "expected_decision": "reject"
+  }
+}

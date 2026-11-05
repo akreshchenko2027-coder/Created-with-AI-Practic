@@ -1,0 +1,280 @@
+<meta charset="utf-8">
+<title>Розбір рахунків — ПР7</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 76rem; margin: 2.5rem auto; padding: 0 1.25rem;
+         font: 16px/1.55 system-ui, sans-serif; }
+  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+  h2 { font-size: 1rem; margin: 1.1rem 0 .5rem; }
+  p.lead { margin-top: 0; opacity: .75; }
+  form { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-bottom: 1.25rem; }
+  select, input[type=file] { padding: .35rem .5rem; font: inherit; border: 1px solid #8886; border-radius: .4rem; }
+  button { padding: .5rem 1.1rem; font: inherit; border: 0; border-radius: .4rem;
+           background: #2563eb; color: #fff; cursor: pointer; }
+  button[disabled] { opacity: .55; cursor: default; }
+  .or { opacity: .6; font-size: .9rem; }
+  .layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1.5rem; }
+  @media (max-width: 52rem) { .layout { grid-template-columns: 1fr; } }
+  #preview { width: 100%; border: 1px solid #8886; border-radius: .4rem; background: #8881; min-height: 12rem; }
+  #preview-info { font-size: .8rem; opacity: .7; margin-top: .3rem; }
+  .badge { display: inline-block; font-size: .9rem; padding: .15rem .7rem; border-radius: 1rem; background: #8883; }
+  .badge.auto { background: #16a34a33; }
+  .badge.review { background: #f59e0b44; }
+  .badge.reject { background: #dc262633; }
+  #reasons { margin: .5rem 0 0; padding-left: 1.2rem; font-size: .92rem; }
+  #error { border: 1px solid #dc2626; border-radius: .4rem; padding: .6rem .9rem; display: none; white-space: pre-wrap; }
+  .issue { border-left: 3px solid #dc2626; padding: .2rem .7rem; margin: .35rem 0; font-size: .9rem; }
+  .issue.warning { border-color: #f59e0b; }
+  .issue code { font-size: .8rem; opacity: .75; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+  th, td { border-bottom: 1px solid #8884; padding: .3rem .5rem; text-align: left; vertical-align: top; }
+  th { font-weight: 600; opacity: .8; }
+  td.path { font-family: ui-monospace, monospace; font-size: .8rem; opacity: .8; white-space: nowrap; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .missing { opacity: .5; font-style: italic; }
+  .flag { background: #dc262622; }
+  .flag.warning { background: #f59e0b22; }
+  .empty { opacity: .6; font-size: .9rem; }
+  .meta-line { margin-top: 1rem; font-size: .85rem; opacity: .7; }
+  details { margin-top: 1rem; }
+  summary { cursor: pointer; font-size: .95rem; }
+  pre { font-size: .8rem; white-space: pre-wrap; }
+</style>
+
+<h1>Розбір рахунків постачальників «Сузірʼя»</h1>
+<p class="lead">Модель читає зображення рахунку й повертає задані поля; код перевіряє їх правилами й вирішує: у реєстр платежів, на перевірку людині чи відхилити.</p>
+
+<form id="form">
+  <label>зразок
+    <select id="sample"><option value="">—</option></select>
+  </label>
+  <span class="or">або</span>
+  <input type="file" id="file" accept="image/*">
+  <button type="submit" id="send">Розібрати</button>
+</form>
+
+<div class="layout">
+  <section>
+    <img id="preview" alt="">
+    <div id="preview-info"></div>
+  </section>
+  <section>
+    <div id="error"></div>
+    <div id="verdict" class="empty">Оберіть зразок або завантажте зображення.</div>
+    <ul id="reasons"></ul>
+    <h2>Проблеми, знайдені правилами</h2>
+    <div id="issues" class="empty">—</div>
+    <h2>Вилучені поля</h2>
+    <div id="fields" class="empty">—</div>
+    <h2>Позиції</h2>
+    <div id="items" class="empty">—</div>
+    <div class="meta-line" id="meta"></div>
+    <details>
+      <summary>Відповідь застосунку повністю</summary>
+      <pre id="raw"></pre>
+    </details>
+  </section>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const DECISIONS = { auto: 'у реєстр платежів', review: 'на перевірку людині', reject: 'відхилено' };
+  let current = null;   // { blob, name }
+
+  async function loadSamples() {
+    try {
+      const groups = await (await fetch('/api/samples')).json();
+      for (const [group, files] of Object.entries(groups)) {
+        const og = document.createElement('optgroup');
+        og.label = group;
+        for (const f of files) {
+          const o = document.createElement('option');
+          o.value = `${group}/${f}`;
+          o.textContent = f;
+          og.appendChild(o);
+        }
+        $('sample').appendChild(og);
+      }
+    } catch { /* без зразків сторінка все одно працює з файлами */ }
+  }
+
+  function showPreview(blob, name) {
+    current = { blob, name };
+    const url = URL.createObjectURL(blob);
+    $('preview').src = url;
+    $('preview').onload = () => {
+      const img = $('preview');
+      $('preview-info').textContent =
+        `${name} · ${img.naturalWidth} × ${img.naturalHeight} · ${(blob.size / 1024).toFixed(0)} КБ`;
+    };
+  }
+
+  $('sample').addEventListener('change', async (e) => {
+    if (!e.target.value) return;
+    $('file').value = '';
+    const blob = await (await fetch('/samples/' + e.target.value)).blob();
+    showPreview(blob, e.target.value);
+  });
+
+  $('file').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    $('sample').value = '';
+    showPreview(f, f.name);
+  });
+
+  // Поля документа показуються плоско: шлях → значення. Назви полів —
+  // ваші, сторінка їх не знає; позиції (перший список обʼєктів) ідуть
+  // окремою таблицею. Поле, на яке вказує проблема, підсвічується.
+  function flatten(obj, prefix = '', out = []) {
+    for (const [k, v] of Object.entries(obj || {})) {
+      const path = prefix ? `${prefix}.${k}` : k;
+      if (v && typeof v === 'object' && !Array.isArray(v)) flatten(v, path, out);
+      else if (Array.isArray(v) && v.length && typeof v[0] === 'object') continue;
+      else out.push([path, v]);
+    }
+    return out;
+  }
+
+  function findItems(obj) {
+    for (const [k, v] of Object.entries(obj || {})) {
+      if (Array.isArray(v) && v.length && typeof v[0] === 'object') return [k, v];
+      if (v && typeof v === 'object' && !Array.isArray(v)) {
+        const inner = findItems(v);
+        if (inner) return [`${k}.${inner[0]}`, inner[1]];
+      }
+    }
+    return null;
+  }
+
+  function issueFor(path, issues) {
+    return issues.find(i => i.field === path || (i.field || '').startsWith(path + '.'));
+  }
+
+  function cell(td, value) {
+    if (value === null || value === undefined) {
+      td.className += ' missing';
+      td.textContent = 'немає';
+    } else {
+      td.textContent = typeof value === 'object' ? JSON.stringify(value) : String(value);
+    }
+  }
+
+  function renderFields(doc, issues) {
+    const rows = flatten(doc);
+    if (!rows.length) { $('fields').className = 'empty'; $('fields').textContent = '—'; return; }
+    const t = document.createElement('table');
+    for (const [path, value] of rows) {
+      const tr = t.insertRow();
+      const hit = issueFor(path, issues);
+      if (hit) tr.className = 'flag ' + (hit.severity || '');
+      const a = tr.insertCell(); a.className = 'path'; a.textContent = path;
+      const b = tr.insertCell(); b.className = ''; cell(b, value);
+    }
+    $('fields').className = ''; $('fields').replaceChildren(t);
+  }
+
+  function renderItems(doc, issues) {
+    const found = findItems(doc);
+    if (!found) { $('items').className = 'empty'; $('items').textContent = '—'; return; }
+    const [path, items] = found;
+    const keys = [...new Set(items.flatMap(Object.keys))];
+    const t = document.createElement('table');
+    const head = t.createTHead().insertRow();
+    for (const k of ['#', ...keys]) { const th = document.createElement('th'); th.textContent = k; head.appendChild(th); }
+    const body = t.createTBody();
+    items.forEach((it, n) => {
+      const tr = body.insertRow();
+      const num = tr.insertCell(); num.textContent = n + 1;
+      for (const k of keys) {
+        const td = tr.insertCell();
+        td.className = typeof it[k] === 'number' || /^-?\d[\d\s.,]*$/.test(it[k] ?? '') ? 'num' : '';
+        const hit = issueFor(`${path}.${n}.${k}`, issues);   // індекс рядка — з нуля
+        if (hit) td.className += ' flag ' + (hit.severity || '');
+        cell(td, it[k]);
+      }
+    });
+    $('items').className = ''; $('items').replaceChildren(t);
+  }
+
+  function renderIssues(issues) {
+    if (!issues.length) { $('issues').className = 'empty'; $('issues').textContent = 'Правила нічого не знайшли.'; return; }
+    $('issues').className = '';
+    $('issues').replaceChildren(...issues.map(i => {
+      const d = document.createElement('div');
+      d.className = 'issue ' + (i.severity || '');
+      const c = document.createElement('code');
+      c.textContent = `${i.rule} · ${i.field}`;
+      d.append(i.message + ' ', c);
+      return d;
+    }));
+  }
+
+  function renderMeta(data) {
+    const parts = [];
+    if (data.model) parts.push(`модель: ${data.model}`);
+    const im = data.image || {};
+    if (im.original && im.sent) {
+      parts.push(`зображення: ${im.original.width}×${im.original.height} → ${im.sent.width}×${im.sent.height}, ` +
+                 `${((im.sent.bytes || 0) / 1024).toFixed(0)} КБ`);
+    }
+    for (const [k, v] of Object.entries(data.elapsed || {})) {
+      parts.push(`${k}: ${Number(v).toFixed(v < 1 ? 3 : 2)} с`);
+    }
+    if (data.usage) {
+      const u = data.usage;
+      parts.push(`токени: ${u.prompt_tokens ?? '?'} у запиті, ${u.completion_tokens ?? '?'} у відповіді`);
+    }
+    $('meta').textContent = parts.join(' · ');
+  }
+
+  function reset() {
+    $('error').style.display = 'none';
+    $('reasons').replaceChildren();
+    for (const id of ['issues', 'fields', 'items']) { $(id).className = 'empty'; $(id).textContent = '—'; }
+    $('meta').textContent = ''; $('raw').textContent = '';
+  }
+
+  $('form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!current) return;
+    reset();
+    $('send').disabled = true;
+    $('verdict').className = 'empty';
+    $('verdict').textContent = 'Модель читає документ…';
+    try {
+      const body = new FormData();
+      body.append('image', current.blob, current.name.split('/').pop());
+      const response = await fetch('/api/extract', { method: 'POST', body });
+      const data = await response.json().catch(() => ({ detail: `Помилка ${response.status}` }));
+      $('raw').textContent = JSON.stringify(data, null, 2);
+      if (!response.ok) {
+        $('verdict').textContent = '';
+        $('error').style.display = 'block';
+        $('error').textContent = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail ?? data);
+        return;
+      }
+      $('verdict').className = '';
+      $('verdict').innerHTML = '<span class="badge"></span>';
+      const b = $('verdict').firstChild;
+      b.classList.add(data.decision);
+      b.textContent = DECISIONS[data.decision] || data.decision;
+      $('reasons').replaceChildren(...(data.reasons || []).map(r => {
+        const li = document.createElement('li'); li.textContent = r; return li;
+      }));
+      const issues = data.issues || [];
+      renderIssues(issues);
+      renderFields(data.document, issues);
+      renderItems(data.document, issues);
+      renderMeta(data);
+    } catch {
+      $('verdict').textContent = '';
+      $('error').style.display = 'block';
+      $('error').textContent = 'Не вдалося звʼязатися із застосунком.';
+    } finally {
+      $('send').disabled = false;
+    }
+  });
+
+  loadSamples();
+</script>

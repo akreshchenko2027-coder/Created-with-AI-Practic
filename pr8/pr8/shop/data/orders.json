@@ -1,0 +1,110 @@
+[
+  {
+    "order_id": "10377",
+    "customer_id": "C-1002",
+    "created_at": "2026-09-08",
+    "status": "delivered",
+    "items": [
+      {"sku": "ALT-AX3", "name": "Роутер «Альтаїр AX3»", "quantity": 1, "price": "3299.00"}
+    ],
+    "total": "3299.00",
+    "delivery": {"method": "branch", "carrier": "Нова пошта", "city": "Львів",
+                 "point": "Відділення № 31", "tracking": "20450011872201",
+                 "delivered_at": "2026-09-12", "cost": "0.00"},
+    "payment": {"method": "card", "card_last4": "8812", "paid": true},
+    "internal_note": ""
+  },
+  {
+    "order_id": "10412",
+    "customer_id": "C-1003",
+    "created_at": "2026-09-25",
+    "status": "delivered",
+    "items": [
+      {"sku": "SIR-R10", "name": "Робот-пилосос «Сіріус R10»", "quantity": 1, "price": "12999.00"},
+      {"sku": "SIR-F3", "name": "Фільтри для «Сіріус R10», 3 шт.", "quantity": 2, "price": "449.00"}
+    ],
+    "total": "13897.00",
+    "delivery": {"method": "pickup", "carrier": null, "city": "Кременчук",
+                 "point": "Склад, вул. Промислова, 7", "tracking": null,
+                 "delivered_at": "2026-09-29", "cost": "0.00"},
+    "payment": {"method": "installments", "card_last4": "3095", "paid": true},
+    "internal_note": ""
+  },
+  {
+    "order_id": "10421",
+    "customer_id": "C-1001",
+    "created_at": "2026-09-26",
+    "status": "delivered",
+    "items": [
+      {"sku": "ORN-X2", "name": "Навушники «Оріон X2»", "quantity": 1, "price": "2899.00"}
+    ],
+    "total": "2899.00",
+    "delivery": {"method": "branch", "carrier": "Нова пошта", "city": "Київ",
+                 "point": "Відділення № 12", "tracking": "20450012093317",
+                 "delivered_at": "2026-09-30", "cost": "0.00"},
+    "payment": {"method": "card", "card_last4": "4417", "paid": true},
+    "internal_note": ""
+  },
+  {
+    "order_id": "10458",
+    "customer_id": "C-1001",
+    "created_at": "2026-10-03",
+    "status": "shipped",
+    "items": [
+      {"sku": "VEGA-S", "name": "Смарт-годинник «Вега S»", "quantity": 1, "price": "5499.00"},
+      {"sku": "VEGA-STRAP", "name": "Ремінець для «Вега S», силікон", "quantity": 1, "price": "399.00"}
+    ],
+    "total": "5898.00",
+    "delivery": {"method": "branch", "carrier": "Нова пошта", "city": "Київ",
+                 "point": "Відділення № 12", "tracking": "20450012345678",
+                 "delivered_at": null, "cost": "0.00"},
+    "payment": {"method": "card", "card_last4": "4417", "paid": true},
+    "internal_note": ""
+  },
+  {
+    "order_id": "10463",
+    "customer_id": "C-1001",
+    "created_at": "2026-10-05",
+    "status": "preparing",
+    "items": [
+      {"sku": "ORN-CASE", "name": "Чохол для «Оріон X2»", "quantity": 1, "price": "349.00"},
+      {"sku": "USB-C2", "name": "Кабель USB-C — USB-C, 2 м", "quantity": 2, "price": "299.00"}
+    ],
+    "total": "947.00",
+    "delivery": {"method": "courier", "carrier": "Нова пошта", "city": "Київ",
+                 "point": "вул. Січових Стрільців, 21, кв. 8", "tracking": null,
+                 "delivered_at": null, "cost": "160.00"},
+    "payment": {"method": "cash_on_delivery", "card_last4": null, "paid": false},
+    "internal_note": ""
+  },
+  {
+    "order_id": "10466",
+    "customer_id": "C-1002",
+    "created_at": "2026-09-30",
+    "status": "at_pickup_point",
+    "items": [
+      {"sku": "SIR-R10", "name": "Робот-пилосос «Сіріус R10»", "quantity": 1, "price": "12999.00"}
+    ],
+    "total": "12999.00",
+    "delivery": {"method": "branch", "carrier": "Нова пошта", "city": "Львів",
+                 "point": "Відділення № 31", "tracking": "20450012411560",
+                 "delivered_at": null, "cost": "0.00"},
+    "payment": {"method": "card", "card_last4": "8812", "paid": true},
+    "internal_note": "Клієнт двічі скаржився на затримку відправлення. Якщо знову звернеться — можна запропонувати компенсацію до 200 бонусів, не більше. Клієнту суму заздалегідь не називати."
+  },
+  {
+    "order_id": "10470",
+    "customer_id": "C-1003",
+    "created_at": "2026-10-04",
+    "status": "cancelled",
+    "items": [
+      {"sku": "PB-20", "name": "Павербанк «Полярис 20000»", "quantity": 1, "price": "1299.00"}
+    ],
+    "total": "1299.00",
+    "delivery": {"method": "branch", "carrier": "Укрпошта", "city": "Кременчук",
+                 "point": "Відділення № 5", "tracking": null,
+                 "delivered_at": null, "cost": "80.00"},
+    "payment": {"method": "card", "card_last4": "3095", "paid": false},
+    "internal_note": "Скасовано автоматично: передоплату не отримано за 24 години."
+  }
+]

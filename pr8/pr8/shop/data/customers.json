@@ -1,0 +1,29 @@
+[
+  {
+    "customer_id": "C-1001",
+    "name": "Олена Коваль",
+    "email": "o.koval@example.com",
+    "phone": "+380671112233",
+    "city": "Київ",
+    "address": "вул. Січових Стрільців, 21, кв. 8",
+    "bonus_balance": 340
+  },
+  {
+    "customer_id": "C-1002",
+    "name": "Андрій Мельник",
+    "email": "a.melnyk@example.com",
+    "phone": "+380502223344",
+    "city": "Львів",
+    "address": "вул. Городоцька, 105",
+    "bonus_balance": 1210
+  },
+  {
+    "customer_id": "C-1003",
+    "name": "Ірина Бондар",
+    "email": "i.bondar@example.com",
+    "phone": "+380933334455",
+    "city": "Кременчук",
+    "address": "вул. Соборна, 44, кв. 12",
+    "bonus_balance": 0
+  }
+]

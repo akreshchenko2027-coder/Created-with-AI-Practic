@@ -1,0 +1,235 @@
+<meta charset="utf-8">
+<title>Помічник клієнта — ПР8</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 64rem; margin: 2.5rem auto; padding: 0 1.25rem;
+         font: 16px/1.55 system-ui, sans-serif; }
+  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+  h2 { font-size: 1rem; margin: 1.5rem 0 .5rem; }
+  p.lead { margin-top: 0; opacity: .75; }
+  form { display: grid; gap: .6rem; margin-bottom: 1.25rem; }
+  .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+  textarea { flex: 1; min-width: 16rem; min-height: 3.2rem; padding: .5rem .7rem; font: inherit;
+             border: 1px solid #8886; border-radius: .4rem; resize: vertical; }
+  select { padding: .35rem .5rem; font: inherit; border: 1px solid #8886; border-radius: .4rem; }
+  label { font-size: .9rem; opacity: .85; display: inline-flex; gap: .35rem; align-items: center; }
+  button { padding: .5rem 1.1rem; font: inherit; border: 0; border-radius: .4rem;
+           background: #2563eb; color: #fff; cursor: pointer; }
+  button.secondary { background: #8883; color: inherit; padding: .35rem .8rem; font-size: .9rem; }
+  button[disabled] { opacity: .55; cursor: default; }
+  #answer { border: 1px solid #8886; border-radius: .4rem; padding: .8rem 1rem; white-space: pre-wrap; min-height: 4rem; }
+  #answer.empty { opacity: .6; }
+  #answer.error { border-color: #dc2626; }
+  .meta-line { margin-top: .6rem; font-size: .85rem; opacity: .7; }
+  .empty { opacity: .6; font-size: .9rem; }
+  .call { border: 1px solid #8886; border-radius: .4rem; padding: .5rem .7rem; margin-bottom: .5rem; font-size: .9rem; }
+  .call .head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; }
+  .call .name { font-weight: 600; font-family: ui-monospace, monospace; }
+  .call .round, .call .time { font-size: .8rem; opacity: .7; }
+  .call .time { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .call .reason { margin-top: .3rem; }
+  .call pre { margin: .3rem 0 0; padding: .4rem .6rem; background: #8881; border-radius: .3rem;
+              font-size: .8rem; white-space: pre-wrap; word-break: break-word; max-height: 16rem; overflow: auto; }
+  .call .label { font-size: .75rem; opacity: .7; margin-top: .4rem; }
+  .badge { display: inline-block; font-size: .75rem; padding: .05rem .5rem; border-radius: 1rem; background: #8883; }
+  .badge.ok { background: #16a34a33; }
+  .badge.rejected { background: #d9770633; }
+  .badge.error { background: #dc262633; }
+  details { margin-top: 1.25rem; }
+  summary { cursor: pointer; font-size: .95rem; }
+  .tool { border-left: 3px solid #8886; padding: .3rem .8rem; margin: .6rem 0; font-size: .9rem; }
+  .tool .name { font-weight: 600; font-family: ui-monospace, monospace; }
+  .tool pre { margin: .3rem 0 0; font-size: .8rem; white-space: pre-wrap; }
+</style>
+
+<h1>Помічник клієнта магазину «Сузірʼя»</h1>
+<p class="lead">Відповідає на питання про замовлення, товари, доставку й повернення. Дані бере не з памʼяті моделі, а з сервісу магазину — через інструменти, які модель просить викликати, а ваш код перевіряє й виконує.</p>
+
+<form id="form">
+  <div class="row">
+    <!-- Вибір клієнта заміняє вхід у кабінет. У справжньому застосунку
+         клієнта визначає сесія, а не поле на сторінці. -->
+    <label>клієнт
+      <select id="customer"></select>
+    </label>
+    <button type="button" class="secondary" id="reset" title="Повернути дані магазину до початкового стану">скинути дані магазину</button>
+  </div>
+  <div class="row">
+    <textarea id="question" placeholder="Де моє замовлення 10458?" required></textarea>
+    <button type="submit" id="send">Запитати</button>
+  </div>
+</form>
+
+<section>
+  <div id="answer" class="empty">Відповіді ще немає.</div>
+  <div class="meta-line" id="meta"></div>
+</section>
+
+<h2>Виклики інструментів</h2>
+<div id="calls" class="empty">Зʼявляться разом із відповіддю.</div>
+
+<details id="tools-box">
+  <summary>Інструменти, які бачить модель</summary>
+  <div id="tools" class="empty">Ще не завантажено.</div>
+</details>
+
+<script>
+  const form = document.getElementById('form');
+  const send = document.getElementById('send');
+  const customerSelect = document.getElementById('customer');
+  const answerBox = document.getElementById('answer');
+  const callsBox = document.getElementById('calls');
+  const toolsBox = document.getElementById('tools');
+  const meta = document.getElementById('meta');
+
+  const STATUS_TEXT = { ok: 'виконано', rejected: 'відхилено', error: 'помилка' };
+
+  function pretty(value) {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'string') {
+      try { return JSON.stringify(JSON.parse(value), null, 2); } catch { return value; }
+    }
+    return JSON.stringify(value, null, 2);
+  }
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  async function loadCustomers() {
+    try {
+      const list = await (await fetch('/api/customers')).json();
+      for (const c of list) {
+        const option = el('option', '', `${c.name} · ${c.city} (${c.customer_id})`);
+        option.value = c.customer_id;
+        customerSelect.appendChild(option);
+      }
+    } catch {
+      customerSelect.appendChild(el('option', '', 'не вдалося завантажити'));
+    }
+  }
+
+  // Описи інструментів — рівно те, що отримує модель. Якщо модель
+  // обирає не той інструмент, спершу читайте їх.
+  async function loadTools() {
+    try {
+      const response = await fetch('/api/tools');
+      if (!response.ok) throw new Error();
+      const list = await response.json();
+      toolsBox.innerHTML = '';
+      toolsBox.className = '';
+      if (!list.length) { toolsBox.className = 'empty'; toolsBox.textContent = 'Інструментів немає.'; return; }
+      for (const t of list) {
+        const f = t.function || t;
+        const div = el('div', 'tool');
+        div.append(el('div', 'name', f.name || '?'));
+        if (f.description) div.append(el('div', '', f.description));
+        if (f.parameters) div.append(el('pre', '', pretty(f.parameters)));
+        toolsBox.appendChild(div);
+      }
+    } catch {
+      toolsBox.className = 'empty';
+      toolsBox.textContent = 'Описів інструментів ще немає — реалізуйте tools.specs().';
+    }
+  }
+
+  // Журнал викликів: що запропонувала модель, що з цим зробив ваш код і
+  // що повернулося моделі. Неправильна відповідь — спершу сюди: чи був
+  // потрібний виклик, з якими аргументами, що він повернув.
+  function renderCalls(calls) {
+    callsBox.innerHTML = '';
+    if (!calls || !calls.length) {
+      callsBox.className = 'empty';
+      callsBox.textContent = 'Модель не викликала жодного інструмента.';
+      return;
+    }
+    callsBox.className = '';
+    for (const c of calls) {
+      const div = el('div', 'call');
+      const head = el('div', 'head');
+      head.append(el('span', 'name', c.name));
+      const badge = el('span', `badge ${c.status}`, STATUS_TEXT[c.status] || c.status);
+      head.append(badge);
+      if (c.round !== undefined) head.append(el('span', 'round', `звертання ${c.round}`));
+      if (typeof c.elapsed === 'number') head.append(el('span', 'time', `${(c.elapsed * 1000).toFixed(0)} мс`));
+      div.append(head);
+      if (c.reason) div.append(el('div', 'reason', c.reason));
+      div.append(el('div', 'label', 'аргументи від моделі'));
+      div.append(el('pre', '', pretty(c.arguments) || '—'));
+      if (c.result !== null && c.result !== undefined) {
+        div.append(el('div', 'label', 'повернуто моделі'));
+        div.append(el('pre', '', pretty(c.result)));
+      }
+      callsBox.appendChild(div);
+    }
+  }
+
+  function renderMeta(data) {
+    const parts = [];
+    if (data.model) parts.push(`модель: ${data.model}`);
+    if (data.rounds !== undefined) parts.push(`звертань до моделі: ${data.rounds}`);
+    if (data.stopped && data.stopped !== 'answer') parts.push(`зупинено: ${data.stopped}`);
+    const e = data.elapsed || {};
+    if (e.model !== undefined) parts.push(`час моделі: ${Number(e.model).toFixed(2)} с`);
+    if (e.tools !== undefined) parts.push(`час інструментів: ${(e.tools * 1000).toFixed(0)} мс`);
+    if (data.usage) {
+      const u = data.usage;
+      parts.push(`токени: ${u.prompt_tokens ?? '?'} у запитах, ${u.completion_tokens ?? '?'} у відповідях`);
+    }
+    meta.textContent = parts.join(' · ');
+  }
+
+  function showError(message) {
+    answerBox.className = 'error';
+    answerBox.textContent = message;
+    meta.textContent = '';
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const question = document.getElementById('question').value.trim();
+    if (!question) return;
+    send.disabled = true;
+    answerBox.className = 'empty';
+    answerBox.textContent = 'Питаю модель…';
+    callsBox.className = 'empty';
+    callsBox.textContent = '…';
+    try {
+      const response = await fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer_id: customerSelect.value, question }),
+      });
+      let data;
+      try { data = await response.json(); } catch { data = {}; }
+      if (!response.ok) {
+        showError(data.detail || `Помилка ${response.status}`);
+        callsBox.textContent = '';
+        return;
+      }
+      answerBox.className = '';
+      answerBox.textContent = data.answer ?? JSON.stringify(data, null, 2);
+      renderCalls(data.calls);
+      renderMeta(data);
+    } catch {
+      showError('Не вдалося звʼязатися із застосунком.');
+    } finally {
+      send.disabled = false;
+    }
+  });
+
+  document.getElementById('reset').addEventListener('click', async () => {
+    try {
+      await fetch('/api/reset', { method: 'POST' });
+      meta.textContent = 'Дані магазину повернуто до початкового стану.';
+    } catch {
+      meta.textContent = 'Не вдалося скинути дані.';
+    }
+  });
+
+  loadCustomers();
+  loadTools();
+</script>

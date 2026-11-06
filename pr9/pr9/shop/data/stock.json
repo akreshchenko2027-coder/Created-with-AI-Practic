@@ -1,0 +1,14 @@
+{
+  "ORN-X2": {"available": 14},
+  "ORN-PRO": {"available": 0, "expected_restock": "2026-10-20"},
+  "ORN-CASE": {"available": 40},
+  "VEGA-S": {"available": 3},
+  "VEGA-STRAP": {"available": 25},
+  "ALT-AX3": {"available": 7},
+  "ALT-M1": {"available": 0, "expected_restock": null},
+  "SIR-R10": {"available": 2},
+  "SIR-F3": {"available": 60},
+  "PB-20": {"available": 11},
+  "USB-C2": {"available": 120},
+  "TV-55": {"available": 1}
+}

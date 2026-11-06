@@ -1,0 +1,429 @@
+<meta charset="utf-8">
+<title>Звернення клієнтів — ПР9</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 68rem; margin: 2.5rem auto; padding: 0 1.25rem;
+         font: 16px/1.55 system-ui, sans-serif; }
+  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+  h2 { font-size: 1.05rem; margin: 2rem 0 .6rem; display: flex; gap: .75rem; align-items: baseline; }
+  h3 { font-size: .95rem; margin: 1.1rem 0 .4rem; }
+  p.lead { margin-top: 0; opacity: .75; }
+  form { display: grid; gap: .6rem; margin-bottom: 1.25rem; }
+  .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+  textarea { flex: 1; min-width: 16rem; min-height: 4.5rem; padding: .5rem .7rem; font: inherit;
+             border: 1px solid #8886; border-radius: .4rem; resize: vertical; }
+  input[type=text] { flex: 1; min-width: 12rem; padding: .35rem .6rem; font: inherit; font-size: .9rem;
+                     border: 1px solid #8886; border-radius: .4rem; }
+  select { padding: .35rem .5rem; font: inherit; border: 1px solid #8886; border-radius: .4rem; }
+  label { font-size: .9rem; opacity: .85; display: inline-flex; gap: .35rem; align-items: center; }
+  button { padding: .5rem 1.1rem; font: inherit; border: 0; border-radius: .4rem;
+           background: #2563eb; color: #fff; cursor: pointer; }
+  button.secondary { background: #8883; color: inherit; padding: .35rem .8rem; font-size: .9rem; }
+  button.approve { background: #16a34a; padding: .35rem .9rem; font-size: .9rem; }
+  button.reject { background: #dc2626; padding: .35rem .9rem; font-size: .9rem; }
+  button[disabled] { opacity: .55; cursor: default; }
+  .box { border: 1px solid #8886; border-radius: .4rem; padding: .8rem 1rem; }
+  .box.error { border-color: #dc2626; }
+  .reply { white-space: pre-wrap; }
+  .empty { opacity: .6; font-size: .9rem; }
+  .meta-line { margin-top: .6rem; font-size: .85rem; opacity: .75; }
+  .head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; }
+  .mono { font-family: ui-monospace, monospace; font-size: .85rem; }
+  .muted { font-size: .8rem; opacity: .7; }
+  .badge { display: inline-block; font-size: .75rem; padding: .05rem .5rem; border-radius: 1rem; background: #8883; }
+  .badge.ok, .badge.done { background: #16a34a33; }
+  .badge.waiting, .badge.awaiting_approval, .badge.needs_info { background: #2563eb33; }
+  .badge.rejected, .badge.handed_off { background: #d9770633; }
+  .badge.error, .badge.failed, .badge.stopped { background: #dc262633; }
+  .kind { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; padding: .05rem .4rem;
+          border-radius: .3rem; border: 1px solid #8886; }
+  .kind.model { border-color: #7c3aed; } .kind.tool { border-color: #0891b2; }
+  .kind.code { border-color: #8888; } .kind.human { border-color: #d97706; }
+  .step, .call, .pending { border: 1px solid #8886; border-radius: .4rem; padding: .5rem .7rem; margin-bottom: .5rem; font-size: .9rem; }
+  .pending { border-color: #d97706; }
+  .step .name, .call .name { font-weight: 600; font-family: ui-monospace, monospace; }
+  .step .time, .call .time { margin-left: auto; font-size: .8rem; opacity: .7; font-variant-numeric: tabular-nums; }
+  .detail { margin-top: .3rem; }
+  pre { margin: .3rem 0 0; padding: .4rem .6rem; background: #8881; border-radius: .3rem;
+        font-size: .8rem; white-space: pre-wrap; word-break: break-word; max-height: 16rem; overflow: auto; }
+  .label { font-size: .75rem; opacity: .7; margin-top: .4rem; }
+  .meters { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: .6rem; font-size: .85rem; }
+  .meter { min-width: 11rem; }
+  .meter .bar { height: .35rem; border-radius: .2rem; background: #8883; overflow: hidden; margin-top: .15rem; }
+  .meter .fill { height: 100%; background: #2563eb; }
+  .meter .fill.over { background: #dc2626; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: .35rem .5rem; border-bottom: 1px solid #8884; vertical-align: top; }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover { background: #8881; }
+  .text-cell { max-width: 26rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>
+
+<h1>Звернення клієнтів магазину «Сузірʼя»</h1>
+<p class="lead">Клієнт пише звернення — повернення, скасування, питання про замовлення. Workflow розбирає його, збирає дані інструментами, зупиняється перед дією зі змінами, доки оператор не підтвердить, і відповідає клієнтові. Для порівняння те саме звернення можна віддати агентові з ПР8.</p>
+
+<form id="form">
+  <div class="row">
+    <!-- Вибір клієнта заміняє вхід у кабінет. У справжньому застосунку
+         клієнта визначає сесія, а не поле на сторінці. -->
+    <label>клієнт <select id="customer"></select></label>
+    <label><input type="radio" name="mode" value="workflow" checked> workflow</label>
+    <label><input type="radio" name="mode" value="agent"> агент із ПР8</label>
+    <button type="button" class="secondary" id="reset" title="Повернути дані магазину до початкового стану; збережені звернення лишаються">скинути дані магазину</button>
+  </div>
+  <div class="row">
+    <textarea id="text" placeholder="Хочу повернути робот-пилосос із замовлення 10412, він не підійшов за розміром." required></textarea>
+    <button type="submit" id="send">Надіслати</button>
+  </div>
+</form>
+
+<section id="result"><div class="box empty">Результату ще немає.</div></section>
+
+<h2>Черга оператора <button type="button" class="secondary" id="refresh-queue">оновити</button></h2>
+<div id="queue" class="empty">Ще не завантажено.</div>
+
+<h2>Усі звернення <button type="button" class="secondary" id="refresh-runs">оновити</button></h2>
+<div id="runs" class="empty">Ще не завантажено.</div>
+
+<script>
+  // Статус очікування підтвердження. Якщо у вашому workflow він
+  // називається інакше, змініть тут.
+  const WAITING_STATUS = 'awaiting_approval';
+
+  const STATUS_TEXT = {
+    ok: 'виконано', rejected: 'відхилено', error: 'помилка', waiting: 'очікує', skipped: 'пропущено',
+    running: 'виконується', awaiting_approval: 'чекає підтвердження', needs_info: 'потрібне уточнення',
+    handed_off: 'передано оператору', done: 'завершено', stopped: 'зупинено', failed: 'збій',
+  };
+  const KIND_TEXT = { model: 'модель', tool: 'інструмент', code: 'код', human: 'людина' };
+
+  const form = document.getElementById('form');
+  const send = document.getElementById('send');
+  const customerSelect = document.getElementById('customer');
+  const resultBox = document.getElementById('result');
+  const queueBox = document.getElementById('queue');
+  const runsBox = document.getElementById('runs');
+  const customers = {};
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = text;
+    return node;
+  }
+
+  function pretty(value) {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'string') {
+      try { return JSON.stringify(JSON.parse(value), null, 2); } catch { return value; }
+    }
+    return JSON.stringify(value, null, 2);
+  }
+
+  function badge(status) {
+    return el('span', `badge ${status}`, STATUS_TEXT[status] || status);
+  }
+
+  function tokens(usage) {
+    if (!usage) return null;
+    if (typeof usage.total_tokens === 'number') return usage.total_tokens;
+    const p = usage.prompt_tokens, c = usage.completion_tokens;
+    return (typeof p === 'number' || typeof c === 'number') ? (p || 0) + (c || 0) : null;
+  }
+
+  function seconds(elapsed) {
+    if (!elapsed) return null;
+    if (typeof elapsed.total === 'number') return elapsed.total;
+    const values = Object.values(elapsed).filter((v) => typeof v === 'number');
+    return values.length ? values.reduce((a, b) => a + b, 0) : null;
+  }
+
+  async function getJSON(url, options) {
+    const response = await fetch(url, options);
+    let data;
+    try { data = await response.json(); } catch { data = {}; }
+    if (!response.ok) throw new Error(data.detail ? String(data.detail) : `Помилка ${response.status}`);
+    return data;
+  }
+
+  function showError(message) {
+    resultBox.innerHTML = '';
+    resultBox.append(el('div', 'box error', message));
+  }
+
+  async function loadCustomers() {
+    try {
+      const list = await getJSON('/api/customers');
+      for (const c of list) {
+        customers[c.customer_id] = c.name;
+        const option = el('option', '', `${c.name} · ${c.city} (${c.customer_id})`);
+        option.value = c.customer_id;
+        customerSelect.appendChild(option);
+      }
+    } catch {
+      customerSelect.appendChild(el('option', '', 'не вдалося завантажити'));
+    }
+  }
+
+  // ------------------------------------------------------------ workflow
+
+  function meter(label, used, limit, unit) {
+    const box = el('div', 'meter');
+    const usedText = used === null ? '?' : (unit === 'с' ? used.toFixed(1) : used);
+    box.append(el('div', '', `${label}: ${usedText} з ${limit ?? '?'}${unit ? ' ' + unit : ''}`));
+    if (used !== null && limit) {
+      const bar = el('div', 'bar');
+      const fill = el('div', used > limit ? 'fill over' : 'fill');
+      fill.style.width = `${Math.min(100, (used / limit) * 100)}%`;
+      bar.append(fill);
+      box.append(bar);
+    }
+    return box;
+  }
+
+  function renderPending(pending) {
+    const div = el('div', 'pending');
+    if (typeof pending !== 'object') { div.append(el('pre', '', pretty(pending))); return div; }
+    const { summary, tool, arguments: args, grounds, ...rest } = pending;
+    if (summary) div.append(el('div', '', summary));
+    if (tool) div.append(el('div', 'mono', `${tool}(${args ? JSON.stringify(args) : ''})`));
+    if (grounds) { div.append(el('div', 'label', 'підстави')); div.append(el('pre', '', pretty(grounds))); }
+    if (Object.keys(rest).length) { div.append(el('div', 'label', 'інше')); div.append(el('pre', '', pretty(rest))); }
+    return div;
+  }
+
+  function renderStep(s) {
+    const div = el('div', 'step');
+    const head = el('div', 'head');
+    head.append(el('span', 'muted', `#${s.n}`));
+    head.append(el('span', `kind ${s.kind}`, KIND_TEXT[s.kind] || s.kind));
+    head.append(el('span', 'name', s.name));
+    head.append(badge(s.status));
+    const t = tokens(s.usage);
+    if (t !== null) head.append(el('span', 'muted', `${t} токенів`));
+    if (typeof s.elapsed === 'number') head.append(el('span', 'time', `${(s.elapsed * 1000).toFixed(0)} мс`));
+    div.append(head);
+    if (s.detail) div.append(el('div', 'detail', s.detail));
+    if (s.input !== null && s.input !== undefined) {
+      div.append(el('div', 'label', 'отримав'));
+      div.append(el('pre', '', pretty(s.input)));
+    }
+    if (s.output !== null && s.output !== undefined) {
+      div.append(el('div', 'label', 'повернув'));
+      div.append(el('pre', '', pretty(s.output)));
+    }
+    return div;
+  }
+
+  function renderRun(run) {
+    resultBox.innerHTML = '';
+    const box = el('div', 'box');
+    const head = el('div', 'head');
+    head.append(el('strong', '', `Звернення ${run.run_id}`));
+    head.append(badge(run.status));
+    if (run.route) head.append(el('span', 'muted', `вид: ${run.route}`));
+    head.append(el('span', 'muted', `${customers[run.customer_id] || ''} (${run.customer_id})`));
+    box.append(head);
+    box.append(el('div', 'meta-line', `«${run.text}»`));
+
+    if (run.stopped) box.append(el('div', 'detail', `Причина зупинки: ${run.stopped}`));
+
+    const limits = run.limits || {};
+    const meters = el('div', 'meters');
+    meters.append(meter('кроків', (run.steps || []).length, limits.max_steps, ''));
+    meters.append(meter('час', seconds(run.elapsed), limits.timeout, 'с'));
+    meters.append(meter('токенів', tokens(run.usage), limits.token_budget, ''));
+    box.append(meters);
+
+    if (run.pending) {
+      box.append(el('h3', '', run.status === WAITING_STATUS ? 'Чекає підтвердження оператора' : 'Дія'));
+      box.append(renderPending(run.pending));
+    }
+    if (run.decision) {
+      box.append(el('h3', '', 'Рішення оператора'));
+      box.append(el('pre', '', pretty(run.decision)));
+    }
+    box.append(el('h3', '', 'Відповідь клієнтові'));
+    box.append(run.reply ? el('div', 'reply', run.reply) : el('div', 'empty', 'Ще немає.'));
+    resultBox.append(box);
+
+    resultBox.append(el('h3', '', 'Журнал кроків'));
+    if (!run.steps || !run.steps.length) resultBox.append(el('div', 'empty', 'Кроків немає.'));
+    for (const s of run.steps || []) resultBox.append(renderStep(s));
+  }
+
+  // ------------------------------------------------------------ агент ПР8
+
+  function renderAgent(data) {
+    resultBox.innerHTML = '';
+    const box = el('div', 'box');
+    const head = el('div', 'head');
+    head.append(el('strong', '', 'Агент із ПР8'));
+    if (data.stopped && data.stopped !== 'answer') head.append(el('span', 'badge stopped', `зупинено: ${data.stopped}`));
+    box.append(head);
+    box.append(el('div', 'reply', data.answer ?? ''));
+    const parts = [];
+    if (data.model) parts.push(`модель: ${data.model}`);
+    if (data.rounds !== undefined) parts.push(`звертань до моделі: ${data.rounds}`);
+    const e = data.elapsed || {};
+    if (e.model !== undefined) parts.push(`час моделі: ${Number(e.model).toFixed(2)} с`);
+    if (e.tools !== undefined) parts.push(`час інструментів: ${(e.tools * 1000).toFixed(0)} мс`);
+    const t = tokens(data.usage);
+    if (t !== null) parts.push(`токенів: ${t}`);
+    box.append(el('div', 'meta-line', parts.join(' · ')));
+    resultBox.append(box);
+
+    resultBox.append(el('h3', '', 'Виклики інструментів'));
+    if (!data.calls || !data.calls.length) resultBox.append(el('div', 'empty', 'Модель не викликала жодного інструмента.'));
+    for (const c of data.calls || []) {
+      const div = el('div', 'call');
+      const h = el('div', 'head');
+      h.append(el('span', 'name', c.name));
+      h.append(badge(c.status));
+      if (c.round !== undefined) h.append(el('span', 'muted', `звертання ${c.round}`));
+      if (typeof c.elapsed === 'number') h.append(el('span', 'time', `${(c.elapsed * 1000).toFixed(0)} мс`));
+      div.append(h);
+      if (c.reason) div.append(el('div', 'detail', c.reason));
+      div.append(el('div', 'label', 'аргументи від моделі'));
+      div.append(el('pre', '', pretty(c.arguments) || '—'));
+      if (c.result !== null && c.result !== undefined) {
+        div.append(el('div', 'label', 'повернуто моделі'));
+        div.append(el('pre', '', pretty(c.result)));
+      }
+      resultBox.append(div);
+    }
+  }
+
+  // ------------------------------------------------------------ черга й перелік
+
+  async function decide(runId, approve, comment, buttons) {
+    buttons.forEach((b) => { b.disabled = true; });
+    try {
+      const run = await getJSON(`/api/runs/${encodeURIComponent(runId)}/decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approve, comment }),
+      });
+      renderRun(run);
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      buttons.forEach((b) => { b.disabled = false; });
+      loadQueue();
+      loadRuns();
+    }
+  }
+
+  // Оператор має бачити, що саме буде зроблено і чому, — інакше
+  // підтвердження стає формальністю.
+  async function loadQueue() {
+    try {
+      const list = await getJSON(`/api/runs?status=${encodeURIComponent(WAITING_STATUS)}`);
+      queueBox.innerHTML = '';
+      queueBox.className = '';
+      if (!list.length) { queueBox.className = 'empty'; queueBox.textContent = 'Нічого не чекає підтвердження.'; return; }
+      for (const run of list) {
+        const div = el('div', 'box');
+        div.style.marginBottom = '.6rem';
+        const head = el('div', 'head');
+        head.append(el('strong', '', run.run_id));
+        head.append(el('span', 'muted', `${customers[run.customer_id] || ''} (${run.customer_id})`));
+        if (run.route) head.append(el('span', 'muted', `вид: ${run.route}`));
+        div.append(head);
+        div.append(el('div', 'meta-line', `«${run.text}»`));
+        if (run.pending) div.append(renderPending(run.pending));
+        const row = el('div', 'row');
+        const comment = el('input');
+        comment.type = 'text';
+        comment.placeholder = 'коментар оператора (необовʼязково)';
+        const ok = el('button', 'approve', 'Підтвердити');
+        const no = el('button', 'reject', 'Відхилити');
+        const details = el('button', 'secondary', 'журнал');
+        ok.type = no.type = details.type = 'button';
+        ok.onclick = () => decide(run.run_id, true, comment.value, [ok, no]);
+        no.onclick = () => decide(run.run_id, false, comment.value, [ok, no]);
+        details.onclick = () => openRun(run.run_id);
+        row.append(comment, ok, no, details);
+        div.append(row);
+        queueBox.append(div);
+      }
+    } catch (err) {
+      queueBox.className = 'empty';
+      queueBox.textContent = `Черга недоступна: ${err.message}`;
+    }
+  }
+
+  async function openRun(runId) {
+    try { renderRun(await getJSON(`/api/runs/${encodeURIComponent(runId)}`)); }
+    catch (err) { showError(err.message); }
+    window.scrollTo({ top: resultBox.offsetTop - 16, behavior: 'smooth' });
+  }
+
+  async function loadRuns() {
+    try {
+      const list = await getJSON('/api/runs');
+      runsBox.innerHTML = '';
+      runsBox.className = '';
+      if (!list.length) { runsBox.className = 'empty'; runsBox.textContent = 'Звернень ще немає.'; return; }
+      const table = el('table');
+      const head = el('tr');
+      for (const h of ['номер', 'клієнт', 'статус', 'вид', 'текст', 'оновлено']) head.append(el('th', '', h));
+      table.append(head);
+      for (const run of list) {
+        const tr = el('tr', 'clickable');
+        tr.append(el('td', 'mono', run.run_id));
+        tr.append(el('td', '', run.customer_id));
+        const st = el('td'); st.append(badge(run.status)); tr.append(st);
+        tr.append(el('td', '', run.route || ''));
+        tr.append(el('td', 'text-cell', run.text));
+        tr.append(el('td', 'muted', run.updated_at || ''));
+        tr.onclick = () => openRun(run.run_id);
+        table.append(tr);
+      }
+      runsBox.append(table);
+    } catch (err) {
+      runsBox.className = 'empty';
+      runsBox.textContent = `Перелік недоступний: ${err.message}`;
+    }
+  }
+
+  // ------------------------------------------------------------ події
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const text = document.getElementById('text').value.trim();
+    if (!text) return;
+    const mode = form.querySelector('input[name=mode]:checked').value;
+    send.disabled = true;
+    resultBox.innerHTML = '';
+    resultBox.append(el('div', 'box empty', mode === 'agent' ? 'Агент працює…' : 'Workflow обробляє звернення…'));
+    try {
+      const data = await getJSON('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer_id: customerSelect.value, text, mode }),
+      });
+      if (data.mode === 'agent') renderAgent(data); else renderRun(data);
+    } catch (err) {
+      showError(err.message === 'Failed to fetch' ? 'Не вдалося звʼязатися із застосунком.' : err.message);
+    } finally {
+      send.disabled = false;
+      loadQueue();
+      loadRuns();
+    }
+  });
+
+  document.getElementById('reset').addEventListener('click', async () => {
+    try {
+      await getJSON('/api/reset', { method: 'POST' });
+      resultBox.innerHTML = '';
+      resultBox.append(el('div', 'box empty', 'Дані магазину повернуто до початкового стану. Збережені звернення лишилися.'));
+    } catch {
+      showError('Не вдалося скинути дані.');
+    }
+  });
+  document.getElementById('refresh-queue').addEventListener('click', loadQueue);
+  document.getElementById('refresh-runs').addEventListener('click', loadRuns);
+
+  loadCustomers().then(() => { loadQueue(); loadRuns(); });
+</script>

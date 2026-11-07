@@ -1,0 +1,70 @@
+# Віртуальні середовища
+.venv/
+venv/
+env/
+
+# Кеш Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Локальні налаштування й секрети
+.env
+.env.local
+*.local.json
+
+# Ваги моделей — завантажуються автоматично, у репозиторії не потрібні
+*.pt
+
+# Власний набір для оцінювання (ПР2): зображення й очікувані відповіді
+pr2/eval/images/
+pr2/eval/expected.json
+
+# Власний набір звернень і висновки (ПР3, ПР4)
+pr3/compare/requests.json
+pr3/compare/findings.md
+pr4/compare/requests.json
+pr4/compare/findings.md
+
+# Власний набір запитів і висновки (ПР5)
+pr5/compare/queries.json
+pr5/compare/findings.md
+
+# Індекс і власний набір питань (ПР6): індекс відтворюється командою
+# python ingest.py
+pr6/index/
+pr6/eval/questions.json
+pr6/eval/findings.md
+
+# Власні зразки й висновки (ПР7): власні знімки можуть містити
+# персональні дані, тож до репозиторію не потрапляють
+pr7/samples/own/
+pr7/eval/findings.md
+
+# Власний набір питань і висновки (ПР8)
+pr8/eval/questions.json
+pr8/eval/findings.md
+
+# Стан звернень, власний набір звернень і висновки (ПР9): у стані —
+# тексти звернень клієнтів
+pr9/runs/
+pr9/eval/requests.json
+pr9/eval/findings.md
+
+# Висновки перевірки стійкості (ПР10)
+pr10/eval/findings.md
+
+# Журнал, стан кешу й ліміту, результати прогонів і висновки (ПР11): у
+# журналі — ідентифікатори й часи ваших запитів, у стані — витрати дня
+pr11/logs/
+pr11/state/
+pr11/eval/replay-*.json
+pr11/eval/findings.md
+
+# Редактори та ОС
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

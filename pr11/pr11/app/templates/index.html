@@ -1,0 +1,585 @@
+<meta charset="utf-8">
+<title>Помічник оператора — ПР11</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { max-width: 64rem; margin: 2.5rem auto; padding: 0 1.25rem;
+         font: 16px/1.55 system-ui, sans-serif; }
+  h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+  h2 { font-size: 1.05rem; margin: 2rem 0 .6rem; display: flex; gap: .75rem; align-items: baseline; }
+  h3 { font-size: .95rem; margin: 1.1rem 0 .4rem; }
+  p.lead { margin-top: 0; opacity: .75; }
+  .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin: .6rem 0; }
+  select { padding: .35rem .5rem; font: inherit; border: 1px solid #8886; border-radius: .4rem; max-width: 100%; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 9rem; padding: .6rem .8rem; font: inherit;
+             border: 1px solid #8886; border-radius: .4rem; resize: vertical; }
+  textarea.streaming { border-color: #7c3aed; }
+  textarea.edited { border-color: #d97706; }
+  button { padding: .5rem 1.1rem; font: inherit; border: 0; border-radius: .4rem;
+           background: #2563eb; color: #fff; cursor: pointer; }
+  button.secondary { background: #8883; color: inherit; padding: .35rem .8rem; font-size: .9rem; }
+  button.danger { background: #dc2626; padding: .35rem .8rem; font-size: .9rem; }
+  button[disabled] { opacity: .55; cursor: default; }
+  .box { border: 1px solid #8886; border-radius: .4rem; padding: .8rem 1rem; }
+  .box.error { border-color: #dc2626; }
+  .quote { white-space: pre-wrap; border-left: 3px solid #8886; padding-left: .8rem; margin: .4rem 0; }
+  ul.facts { margin: .3rem 0 0; padding-left: 1.2rem; font-size: .92rem; }
+  .empty { opacity: .6; font-size: .9rem; }
+  .meta-line { margin-top: .5rem; font-size: .85rem; opacity: .75; }
+  .health { font-size: .85rem; opacity: .75; margin: 0 0 .5rem; }
+  .usage { font-size: .9rem; margin: 0 0 1rem; padding: .5rem .8rem; border: 1px solid #8886; border-radius: .4rem;
+           display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: center; }
+  .usage.warning { border-color: #d97706; }
+  .usage.exceeded { border-color: #dc2626; }
+  .usage .bar { flex-basis: 100%; height: .4rem; background: #8883; border-radius: .2rem; overflow: hidden; }
+  .usage .bar > div { height: 100%; background: #2563eb; }
+  .usage.warning .bar > div { background: #d97706; }
+  .usage.exceeded .bar > div { background: #dc2626; }
+  .head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; }
+  .mono { font-family: ui-monospace, monospace; font-size: .85rem; }
+  .muted { font-size: .8rem; opacity: .7; }
+  .badge { display: inline-block; font-size: .75rem; padding: .05rem .5rem; border-radius: 1rem; background: #8883; }
+  .badge.done { background: #16a34a33; }
+  .badge.queued, .badge.running { background: #2563eb33; }
+  .badge.cancelled { background: #d9770633; }
+  .badge.failed { background: #dc262633; }
+  .badge.fallback { background: #d9770633; border: 1px solid #d97706; }
+  .badge.mock { background: #7c3aed22; border: 1px solid #7c3aed; }
+  .badge.cached { background: #0891b222; border: 1px solid #0891b2; }
+  .warnings { margin: .5rem 0 0; padding-left: 1.2rem; font-size: .88rem; color: #d97706; }
+  .log { font-size: .8rem; opacity: .75; max-height: 9rem; overflow: auto; margin-top: .6rem;
+         font-family: ui-monospace, monospace; white-space: pre-wrap; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: .35rem .5rem; border-bottom: 1px solid #8884; vertical-align: top; }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover { background: #8881; }
+</style>
+
+<h1>Помічник оператора «Сузірʼя»</h1>
+<p class="lead">Оператор підтримки обирає звернення клієнта, факти в якому вже встановлено, і просить модель скласти чернетку відповіді. Чернетка приходить фрагментами, її можна зупинити, замовити ще раз і відредагувати. Тепер видно, скільки вона коштувала, чи взято її з кешу і скільки лишилося денного бюджету.</p>
+<div class="health" id="health">Налаштування ще не завантажено.</div>
+<div class="usage" id="usage"><span class="empty">Стан витрат ще не завантажено.</span></div>
+
+<h2>Звернення</h2>
+<div class="row">
+  <select id="request"></select>
+</div>
+<div class="box" id="sample"><div class="empty">Зразки ще не завантажено.</div></div>
+
+<div class="row">
+  <button type="button" id="draft">Скласти чернетку</button>
+  <button type="button" class="danger" id="cancel" disabled>Скасувати</button>
+  <button type="button" class="secondary" id="burst" title="Пʼять замовлень одночасно: що зробить обмеження частоти — і кеш">надіслати 5 поспіль</button>
+  <span class="muted" id="burst-result"></span>
+</div>
+
+<h2>Чернетка</h2>
+<section id="result"><div class="box empty">Чернетки ще немає.</div></section>
+
+<h2>Останні чернетки <button type="button" class="secondary" id="refresh">оновити</button></h2>
+<div id="drafts" class="empty">Ще не завантажено.</div>
+
+<script>
+  // Ідентифікатор клієнта сторінки — для обмеження частоти. У справжньому
+  // застосунку його визначала б сесія, а не сторінка.
+  const CLIENT = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random())).slice(0, 8);
+
+  const STATUS_TEXT = {
+    queued: 'у черзі', running: 'генерується', done: 'готово', failed: 'збій', cancelled: 'скасовано',
+  };
+  const KIND_TEXT = {
+    timeout: 'не дочекалися відповіді', rate_limit: 'перевищено ліміт провайдера',
+    unavailable: 'провайдер недоступний', auth: 'помилка доступу', bad_request: 'провайдер не прийняв запит',
+    cancelled: 'перервано', budget: 'вичерпано денний ліміт витрат', unknown: 'невідомий збій',
+  };
+
+  const requestSelect = document.getElementById('request');
+  const sampleBox = document.getElementById('sample');
+  const resultBox = document.getElementById('result');
+  const draftsBox = document.getElementById('drafts');
+  const usageBox = document.getElementById('usage');
+  const draftButton = document.getElementById('draft');
+  const cancelButton = document.getElementById('cancel');
+  const burstButton = document.getElementById('burst');
+  const burstResult = document.getElementById('burst-result');
+  const samples = {};
+
+  // Поточна чернетка: що відкрито на сторінці і стан її потоку подій.
+  let current = null;
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = text;
+    return node;
+  }
+
+  function badge(status) {
+    return el('span', `badge ${status}`, STATUS_TEXT[status] || status);
+  }
+
+  function money(value) {
+    if (typeof value !== 'number') return '—';
+    return value < 0.01 ? `${value.toFixed(6)} $` : `${value.toFixed(4)} $`;
+  }
+
+  async function getJSON(url, options) {
+    const response = await fetch(url, options);
+    let data;
+    try { data = await response.json(); } catch { data = {}; }
+    if (!response.ok) {
+      const error = new Error(describeError(data, response.status, response.headers.get('X-Request-ID')));
+      error.status = response.status;
+      error.retryAfter = response.headers.get('Retry-After');
+      error.requestId = response.headers.get('X-Request-ID');
+      throw error;
+    }
+    return data;
+  }
+
+  // Тіло помилки може бути {"detail": "..."} (FastAPI за замовчуванням) або
+  // вашим форматом {"error": {"kind": ..., "message": ..., "request_id": ...}}.
+  // Ідентифікатор запиту показуємо завжди — із тіла або із заголовка: саме
+  // його оператор назве, коли скаржитиметься, і саме за ним ви шукатимете
+  // в журналі.
+  function describeError(data, status, headerRequestId) {
+    let text;
+    let requestId = headerRequestId;
+    if (data && data.error && typeof data.error === 'object') {
+      const e = data.error;
+      text = e.message || KIND_TEXT[e.kind] || e.kind || 'помилка';
+      requestId = e.request_id || requestId;
+    } else if (data && data.detail) {
+      text = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+    } else {
+      text = `Помилка ${status}`;
+    }
+    return requestId ? `${text} (запит ${requestId})` : text;
+  }
+
+  // ------------------------------------------------------------ налаштування, витрати, зразки
+
+  async function loadHealth() {
+    const box = document.getElementById('health');
+    try {
+      const h = await getJSON('/api/health');
+      const g = h.gateway || {}, l = h.limits || {}, c = h.cache || {}, b = h.budget || {};
+      const parts = [
+        `відповідає: ${g.provider || '?'}${g.model ? ` (${g.model})` : ''}`,
+        `запасний варіант: ${g.fallback || 'none'}`,
+        `версія prompt: ${h.prompt_version || 'не задано'}`,
+        `спроб до ${g.max_attempts ?? '?'}, таймаут спроби ${g.timeout ?? '?'} с, разом ${g.total_timeout ?? '?'} с`,
+        `одночасно до ${g.max_concurrent ?? '?'}`,
+        `ліміт ${l.per_minute ?? '?'} чернеток/хв на клієнта`,
+        c.enabled ? `кеш увімкнено (TTL ${c.ttl_seconds ?? '?'} с)` : 'кеш вимкнено',
+        `бюджет ${b.daily_usd ?? '?'} $/день`,
+        `журнал: ${h.log_file || '?'}`,
+        `ви — клієнт ${CLIENT}`,
+      ];
+      box.textContent = parts.join(' · ');
+    } catch (err) {
+      box.textContent = `Налаштування недоступні: ${err.message}`;
+    }
+  }
+
+  async function loadUsage() {
+    try {
+      const u = await getJSON('/api/usage');
+      usageBox.innerHTML = '';
+      usageBox.className = 'usage';
+      const b = u.budget || {}, c = u.cache || {};
+      if (b.pending) {
+        usageBox.append(el('span', 'empty', `бюджет: ${b.pending}`));
+      } else {
+        const spent = typeof b.spent === 'number' ? b.spent : null;
+        const limit = typeof b.limit === 'number' ? b.limit : null;
+        const share = spent !== null && limit ? spent / limit : null;
+        if (b.exceeded) usageBox.classList.add('exceeded');
+        else if (b.warning) usageBox.classList.add('warning');
+        usageBox.append(el('strong', '', `сьогодні${b.day ? ` (${b.day})` : ''}: ${money(spent)} з ${money(limit)}`
+          + (share !== null ? ` (${Math.round(share * 100)} %)` : '')));
+        if (typeof b.remaining === 'number') usageBox.append(el('span', '', `залишок ${money(b.remaining)}`));
+        if (b.exceeded) usageBox.append(el('span', 'badge failed', `ліміт вичерпано${b.resets_at ? `, відновиться ${b.resets_at}` : ''}`));
+        else if (b.warning) usageBox.append(el('span', 'badge fallback', 'бюджет закінчується'));
+      }
+      if (c.pending) {
+        usageBox.append(el('span', 'empty', `кеш: ${c.pending}`));
+      } else {
+        const hits = c.hits ?? 0, misses = c.misses ?? 0;
+        const total = hits + misses;
+        usageBox.append(el('span', '', `кеш: ${hits} влучань / ${misses} промахів`
+          + (total ? ` (${Math.round(hits / total * 100)} %)` : '')
+          + (typeof c.bypassed === 'number' ? `, обійдено ${c.bypassed}` : '')
+          + (typeof c.entries === 'number' ? `, записів ${c.entries}` : '')));
+      }
+      if (!b.pending && typeof b.spent === 'number' && typeof b.limit === 'number' && b.limit > 0) {
+        const bar = el('div', 'bar');
+        const fill = el('div');
+        fill.style.width = `${Math.min(100, b.spent / b.limit * 100)}%`;
+        bar.append(fill);
+        usageBox.append(bar);
+      }
+    } catch (err) {
+      usageBox.innerHTML = '';
+      usageBox.append(el('span', 'empty', `Стан витрат недоступний: ${err.message}`));
+    }
+  }
+
+  function renderSample(sample) {
+    sampleBox.innerHTML = '';
+    if (!sample) { sampleBox.append(el('div', 'empty', 'Звернення не обрано.')); return; }
+    const head = el('div', 'head');
+    head.append(el('strong', '', `${sample.customer} (${sample.customer_id})`));
+    head.append(el('span', 'muted', sample.kind));
+    sampleBox.append(head);
+    sampleBox.append(el('div', 'quote', sample.text));
+    sampleBox.append(el('div', 'muted', 'Факти, які встановив оператор:'));
+    const ul = el('ul', 'facts');
+    for (const f of sample.facts || []) ul.append(el('li', '', f));
+    sampleBox.append(ul);
+  }
+
+  async function loadSamples() {
+    try {
+      const list = await getJSON('/api/requests');
+      for (const s of list) {
+        samples[s.id] = s;
+        const option = el('option', '', `${s.id} · ${s.kind} · ${s.customer}`);
+        option.value = s.id;
+        requestSelect.appendChild(option);
+      }
+      renderSample(samples[requestSelect.value]);
+    } catch (err) {
+      sampleBox.innerHTML = '';
+      sampleBox.append(el('div', 'box error', `Зразки недоступні: ${err.message}`));
+    }
+  }
+
+  requestSelect.addEventListener('change', () => renderSample(samples[requestSelect.value]));
+
+  // ------------------------------------------------------------ чернетка
+
+  function seconds(ms) { return `${(ms / 1000).toFixed(1)} с`; }
+
+  function closeStream() {
+    if (current && current.source) { current.source.close(); current.source = null; }
+    if (current && current.timer) { clearInterval(current.timer); current.timer = null; }
+  }
+
+  // Каркас блоку чернетки: шапка, текст, попередження, журнал подій.
+  function renderShell(draftId, requestId) {
+    resultBox.innerHTML = '';
+    const box = el('div', 'box');
+    const head = el('div', 'head');
+    head.id = 'draft-head';
+    head.append(el('strong', '', `Чернетка ${draftId}`));
+    head.append(el('span', 'muted', `звернення ${requestId}`));
+    box.append(head);
+    box.append(el('div', 'meta-line', ''));
+    const textarea = el('textarea', 'streaming');
+    textarea.id = 'draft-text';
+    textarea.placeholder = 'Текст зʼявиться тут у міру генерації…';
+    textarea.addEventListener('input', () => {
+      if (current && current.status === 'done') { current.edited = true; textarea.className = 'edited'; }
+    });
+    box.append(textarea);
+    const warnings = el('ul', 'warnings'); warnings.id = 'draft-warnings'; box.append(warnings);
+    const errorBox = el('div', ''); errorBox.id = 'draft-error'; box.append(errorBox);
+    const actions = el('div', 'row');
+    const again = el('button', 'secondary', 'Повторити');
+    again.type = 'button'; again.id = 'again';
+    again.title = 'Замовити нову чернетку для цього ж звернення, оминувши кеш';
+    again.onclick = () => regenerate(requestId);
+    const copy = el('button', 'secondary', 'Скопіювати');
+    copy.type = 'button'; copy.id = 'copy';
+    copy.onclick = async () => {
+      try { await navigator.clipboard.writeText(textarea.value); copy.textContent = 'Скопійовано'; }
+      catch { copy.textContent = 'Не вдалося скопіювати'; }
+      setTimeout(() => { copy.textContent = 'Скопіювати'; }, 1500);
+    };
+    actions.append(again, copy);
+    box.append(actions);
+    const log = el('div', 'log'); log.id = 'draft-log'; box.append(log);
+    resultBox.append(box);
+  }
+
+  function logLine(text) {
+    const log = document.getElementById('draft-log');
+    if (!log) return;
+    const stamp = new Date().toLocaleTimeString();
+    log.textContent += `${stamp}  ${text}\n`;
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function renderHead(info) {
+    const head = document.getElementById('draft-head');
+    if (!head) return;
+    head.innerHTML = '';
+    head.append(el('strong', '', `Чернетка ${current.id}`));
+    head.append(el('span', 'muted', `звернення ${current.requestId}`));
+    head.append(badge(current.status));
+    if (info.attempt) head.append(el('span', 'muted', `спроба ${info.attempt}`));
+    if (info.provider) head.append(el('span', 'muted', `${info.provider}${info.model ? ` / ${info.model}` : ''}`));
+    if (info.provider === 'mock') head.append(el('span', 'badge mock', 'підставний провайдер'));
+    if (info.fallback) head.append(el('span', 'badge fallback', 'запасний варіант'));
+    if (info.cached) head.append(el('span', 'badge cached', 'з кешу'));
+    if (info.detail) head.append(el('span', 'muted', info.detail));
+  }
+
+  function renderMeta(extra) {
+    const meta = resultBox.querySelector('.meta-line');
+    if (!meta || !current) return;
+    const parts = [];
+    const now = performance.now();
+    if (current.firstAt) parts.push(`перший фрагмент через ${seconds(current.firstAt - current.startedAt)}`);
+    if (current.status === 'running' || current.status === 'queued') parts.push(`триває ${seconds(now - current.startedAt)}`);
+    else if (current.finishedAt) parts.push(`разом ${seconds(current.finishedAt - current.startedAt)}`);
+    if (extra && extra.elapsed) {
+      const e = extra.elapsed;
+      const server = Object.entries(e).filter(([, v]) => typeof v === 'number').map(([k, v]) => `${k} ${v.toFixed(1)} с`);
+      if (server.length) parts.push(`на сервері: ${server.join(', ')}`);
+    }
+    if (extra && extra.usage) {
+      const u = extra.usage;
+      if (typeof u.prompt_tokens === 'number' || typeof u.completion_tokens === 'number') {
+        parts.push(`токенів: вхід ${u.prompt_tokens ?? '?'}, вихід ${u.completion_tokens ?? '?'}`);
+      } else if (typeof u.total_tokens === 'number') {
+        parts.push(`токенів ${u.total_tokens}`);
+      }
+    }
+    if (extra && typeof extra.cost === 'number') parts.push(`вартість ${money(extra.cost)}${extra.cost_estimated ? ' (оцінка)' : ''}`);
+    if (extra && typeof extra.attempts === 'number') parts.push(`спроб ${extra.attempts}`);
+    meta.textContent = parts.join(' · ');
+  }
+
+  function setControls() {
+    const active = current && (current.status === 'queued' || current.status === 'running');
+    cancelButton.disabled = !active;
+    draftButton.disabled = !!active;
+    const again = document.getElementById('again');
+    if (again) again.disabled = !!active;
+  }
+
+  function finish(status) {
+    current.status = status;
+    current.finishedAt = performance.now();
+    closeStream();
+    const textarea = document.getElementById('draft-text');
+    if (textarea) textarea.className = '';
+    renderMeta(current.done);
+    setControls();
+    loadDrafts();
+    loadUsage();
+  }
+
+  // Відкрити чернетку й слухати її події. Для нової — від початку; для
+  // чернетки зі списку — теж від початку, і браузер відтворить усе, що
+  // вже сталося: той самий механізм працює і для відновлення після
+  // перезавантаження сторінки.
+  function open(draftId, requestId, startedAt) {
+    closeStream();
+    current = { id: draftId, requestId, text: '', status: 'queued', startedAt: startedAt || performance.now(),
+                firstAt: null, finishedAt: null, errors: 0, edited: false, done: null, source: null, timer: null };
+    renderShell(draftId, requestId);
+    renderHead({});
+    setControls();
+    current.timer = setInterval(() => renderMeta(current.done), 250);
+
+    const source = new EventSource(`/api/drafts/${encodeURIComponent(draftId)}/events`);
+    current.source = source;
+    const textarea = document.getElementById('draft-text');
+
+    source.addEventListener('status', (e) => {
+      const data = JSON.parse(e.data || '{}');
+      if (data.status) current.status = data.status;
+      renderHead(data);
+      setControls();
+      logLine(`status ${JSON.stringify(data)}`);
+    });
+    source.addEventListener('delta', (e) => {
+      const data = JSON.parse(e.data || '{}');
+      if (!current.firstAt) current.firstAt = performance.now();
+      if (current.status === 'queued') current.status = 'running';
+      current.text += data.text || '';
+      if (!current.edited) textarea.value = current.text;
+    });
+    source.addEventListener('done', (e) => {
+      const data = JSON.parse(e.data || '{}');
+      current.done = data;
+      current.status = 'done';
+      if (typeof data.text === 'string' && !current.edited) { current.text = data.text; textarea.value = data.text; }
+      renderHead({ provider: data.provider, model: data.model, fallback: data.fallback, cached: data.cached, attempt: data.attempts });
+      const warnings = document.getElementById('draft-warnings');
+      warnings.innerHTML = '';
+      for (const w of data.warnings || []) warnings.append(el('li', '', w));
+      logLine(`done ${JSON.stringify({ provider: data.provider, model: data.model, attempts: data.attempts, fallback: data.fallback,
+        cached: data.cached, cost: data.cost, cost_estimated: data.cost_estimated, usage: data.usage, elapsed: data.elapsed })}`);
+      finish('done');
+    });
+    source.addEventListener('error', (e) => {
+      // Подія `error` від сервера (наш збій) має дані; помилка самого
+      // зʼєднання — не має.
+      if (e.data === undefined) {
+        if (current.status === 'done' || current.status === 'failed' || current.status === 'cancelled') { closeStream(); return; }
+        current.errors += 1;
+        logLine(`зʼєднання перервано (${current.errors}); браузер перепідключається…`);
+        if (current.errors >= 5) {
+          showDraftError({ kind: 'unknown', message: 'Не вдалося отримати події чернетки: сервер не відповідає або чернетки не існує.', retryable: true });
+          finish('failed');
+        }
+        return;
+      }
+      const data = JSON.parse(e.data || '{}');
+      current.status = 'failed';
+      showDraftError(data);
+      logLine(`error ${JSON.stringify(data)}`);
+      finish('failed');
+      renderHead({});
+    });
+    source.addEventListener('cancelled', (e) => {
+      logLine('cancelled');
+      renderHead({ detail: current.text ? 'текст нижче — те, що встигло прийти' : '' });
+      finish('cancelled');
+      renderHead({});
+    });
+    source.onopen = () => { if (current.errors) logLine('зʼєднання відновлено'); };
+    // Події, яких сторінка не знає, — у журнал як є.
+    source.onmessage = (e) => logLine(`message ${e.data}`);
+  }
+
+  function showDraftError(error) {
+    const box = document.getElementById('draft-error');
+    if (!box) return;
+    box.innerHTML = '';
+    const div = el('div', 'box error');
+    div.style.marginTop = '.6rem';
+    div.append(el('div', '', `${KIND_TEXT[error.kind] || error.kind || 'Збій'}: ${error.message || ''}`
+      + (error.request_id ? ` (запит ${error.request_id})` : '')));
+    const hint = el('div', 'muted', error.retryable ? 'Збій тимчасовий — можна повторити.'
+      : (error.kind === 'budget' ? 'Повтор не допоможе до відновлення ліміту.' : 'Повтор, найімовірніше, не допоможе.'));
+    div.append(hint);
+    if (error.retryable) {
+      const again = el('button', 'secondary', 'Повторити');
+      again.type = 'button';
+      again.style.marginTop = '.4rem';
+      again.onclick = () => regenerate(current.requestId);
+      div.append(again);
+    }
+    box.append(div);
+  }
+
+  function showError(message) {
+    resultBox.innerHTML = '';
+    resultBox.append(el('div', 'box error', message));
+  }
+
+  async function createDraft(requestId, fresh) {
+    const startedAt = performance.now();
+    const draft = await getJSON('/api/drafts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ request_id: requestId, client: CLIENT, fresh: !!fresh }),
+    });
+    open(draft.draft_id, requestId, startedAt);
+    if (draft.status && draft.status !== 'queued') { current.status = draft.status; renderHead(draft); }
+    loadDrafts();
+  }
+
+  // «Повторити» — прохання про іншу чернетку, тому кеш оминається.
+  async function regenerate(requestId) {
+    if (current && current.edited && !confirm('Ви редагували чернетку. Замовити нову й втратити правки?')) return;
+    try { await createDraft(requestId, true); }
+    catch (err) { showError(err.message + (err.retryAfter ? ` Повторіть через ${err.retryAfter} с.` : '')); }
+  }
+
+  draftButton.addEventListener('click', async () => {
+    const requestId = requestSelect.value;
+    if (!requestId) return;
+    draftButton.disabled = true;
+    try { await createDraft(requestId, false); }
+    catch (err) {
+      showError(err.message === 'Failed to fetch' ? 'Не вдалося звʼязатися із застосунком.'
+        : err.message + (err.retryAfter ? ` Повторіть через ${err.retryAfter} с.` : ''));
+      draftButton.disabled = false;
+    }
+  });
+
+  cancelButton.addEventListener('click', async () => {
+    if (!current) return;
+    cancelButton.disabled = true;
+    try {
+      const draft = await getJSON(`/api/drafts/${encodeURIComponent(current.id)}/cancel`, { method: 'POST' });
+      logLine(`cancel → ${draft.status}`);
+      // Підтвердження прийде подією `cancelled`; якщо робота вже завершилась,
+      // сервер скаже про це сам.
+    } catch (err) {
+      logLine(`cancel: ${err.message}`);
+      setControls();
+    }
+  });
+
+  // Пʼять замовлень одночасно — обмеження частоти в дії; а з кешем —
+  // скільки з них дійде до провайдера.
+  burstButton.addEventListener('click', async () => {
+    const requestId = requestSelect.value;
+    if (!requestId) return;
+    burstButton.disabled = true;
+    burstResult.textContent = 'надсилаю…';
+    const results = await Promise.allSettled(Array.from({ length: 5 }, () => getJSON('/api/drafts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ request_id: requestId, client: CLIENT, fresh: false }),
+    })));
+    let accepted = 0, limited = 0, failed = 0, retryAfter = null;
+    for (const r of results) {
+      if (r.status === 'fulfilled') accepted += 1;
+      else if (r.reason && r.reason.status === 429) { limited += 1; retryAfter = retryAfter || r.reason.retryAfter; }
+      else failed += 1;
+    }
+    const parts = [`прийнято ${accepted}`, `відхилено лімітом ${limited}${retryAfter ? ` (Retry-After: ${retryAfter} с)` : ''}`];
+    if (failed) parts.push(`інших помилок ${failed}`);
+    parts.push('скільки дійшло до провайдера — у переліку й у журналі');
+    burstResult.textContent = parts.join(', ');
+    burstButton.disabled = false;
+    loadDrafts();
+    setTimeout(loadUsage, 3000);
+  });
+
+  // ------------------------------------------------------------ перелік
+
+  async function loadDrafts() {
+    try {
+      const list = await getJSON('/api/drafts');
+      draftsBox.innerHTML = '';
+      draftsBox.className = '';
+      if (!list.length) { draftsBox.className = 'empty'; draftsBox.textContent = 'Чернеток ще немає.'; return; }
+      const table = el('table');
+      const head = el('tr');
+      for (const h of ['номер', 'звернення', 'клієнт', 'статус', 'провайдер', 'спроб', 'кеш', 'вартість', 'оновлено']) head.append(el('th', '', h));
+      table.append(head);
+      for (const d of list) {
+        const tr = el('tr', 'clickable');
+        tr.append(el('td', 'mono', d.draft_id));
+        tr.append(el('td', '', d.request_id));
+        tr.append(el('td', 'mono', d.client === CLIENT ? 'ви' : d.client));
+        const st = el('td'); st.append(badge(d.status)); if (d.fallback) st.append(' ', el('span', 'badge fallback', 'запасний')); tr.append(st);
+        tr.append(el('td', '', d.provider ? `${d.provider}${d.model ? ` / ${d.model}` : ''}` : ''));
+        tr.append(el('td', '', d.attempts ?? ''));
+        const cache = el('td'); if (d.cached) cache.append(el('span', 'badge cached', 'так')); tr.append(cache);
+        tr.append(el('td', 'mono', typeof d.cost === 'number' ? `${money(d.cost)}${d.cost_estimated ? ' ~' : ''}` : ''));
+        tr.append(el('td', 'muted', d.updated_at || ''));
+        tr.onclick = () => { open(d.draft_id, d.request_id); window.scrollTo({ top: resultBox.offsetTop - 16, behavior: 'smooth' }); };
+        table.append(tr);
+      }
+      draftsBox.append(table);
+    } catch (err) {
+      draftsBox.className = 'empty';
+      draftsBox.textContent = `Перелік недоступний: ${err.message}`;
+    }
+  }
+
+  document.getElementById('refresh').addEventListener('click', () => { loadDrafts(); loadUsage(); });
+
+  loadHealth();
+  loadUsage();
+  loadSamples().then(loadDrafts);
+</script>

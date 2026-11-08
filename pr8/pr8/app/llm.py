@@ -1,5 +1,6 @@
 import os
 import time
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from openai import (
@@ -59,6 +60,15 @@ def build_messages(question: str) -> list[dict]:
 
 def chat(messages: list[dict], tools: list[dict], tool_choice: str = "auto") -> dict:
     started = time.perf_counter()
+    request_options = {}
+    if (
+        BASE_URL
+        and MODEL
+        and MODEL.lower().startswith("qwen3")
+        and urlparse(BASE_URL).hostname in {"localhost", "127.0.0.1", "::1"}
+    ):
+        request_options["extra_body"] = {"think": False}
+        request_options["reasoning_effort"] = "none"
     try:
         response = get_client().chat.completions.create(
             model=MODEL,
@@ -67,6 +77,7 @@ def chat(messages: list[dict], tools: list[dict], tool_choice: str = "auto") -> 
             tool_choice=tool_choice,
             temperature=TEMPERATURE,
             max_tokens=MAX_TOKENS,
+            **request_options,
         )
     except APITimeoutError as exc:
         raise LLMError("Модель не відповіла вчасно. Спробуйте ще раз.", 504) from exc

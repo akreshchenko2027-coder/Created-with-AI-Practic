@@ -1,0 +1,311 @@
+{
+ "meta": {
+  "created": "2026-11-08T18:28:04",
+  "label": "Ollama qwen3 tool-call smoke",
+  "target": "agent",
+  "config": {
+   "provider": "openai",
+   "model": "qwen3:4b",
+   "temperature": "0",
+   "max_rounds": 3,
+   "shop_today": "2026-10-06",
+   "app_dir": "F:\\Работа, эдиты и учеба\\По урокам\\Practic\\pr8\\pr8"
+  },
+  "cases_file": "eval\\cases\\agent.json",
+  "cases_sha256": "953d5a7503392c6e",
+  "k": 1,
+  "judge": true,
+  "filters": {
+   "ids": "g01",
+   "kinds": null
+  },
+  "python": "3.12.10",
+  "duration_s": 12.1,
+  "partial": false
+ },
+ "cases": [
+  {
+   "id": "g01",
+   "kind": "normal",
+   "about": "простий виклик: стан замовлення — лише get_order, факти з результату"
+  }
+ ],
+ "results": [
+  {
+   "id": "g01",
+   "kind": "normal",
+   "attempt": 1,
+   "output": {
+    "text": "Замовлення 10458: стан — **Передано в доставку**. Доставка через відділення (Київ, відділення №12). Номер сліду: 20450012345678. Замовлення ще не було отримано.",
+    "status": "ok",
+    "error": null,
+    "calls": [
+     {
+      "round": 1,
+      "name": "get_order",
+      "arguments": "{\"order_id\":\"10458\"}",
+      "status": "ok",
+      "reason": null,
+      "result": {
+       "order_id": "10458",
+       "created_at": "2026-10-03",
+       "status": "Передано в доставку",
+       "total": "5898.00",
+       "items": [
+        {
+         "sku": "VEGA-S",
+         "name": "Смарт-годинник «Вега S»",
+         "quantity": 1,
+         "price": "5499.00"
+        },
+        {
+         "sku": "VEGA-STRAP",
+         "name": "Ремінець для «Вега S», силікон",
+         "quantity": 1,
+         "price": "399.00"
+        }
+       ],
+       "delivery": {
+        "method": "branch",
+        "city": "Київ",
+        "point": "Відділення № 12",
+        "tracking": "20450012345678",
+        "delivered_at": null,
+        "cost": "0.00"
+       }
+      },
+      "elapsed": 0.00025689999984024325
+     }
+    ],
+    "tool_schemas": {
+     "list_orders": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+     },
+     "get_order": {
+      "type": "object",
+      "properties": {
+       "order_id": {
+        "type": "string",
+        "pattern": "^[0-9]{5}$"
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "order_id"
+      ]
+     },
+     "search_products": {
+      "type": "object",
+      "properties": {
+       "query": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+       },
+       "category": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+       },
+       "max_price": {
+        "type": "number",
+        "exclusiveMinimum": 0
+       },
+       "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "query"
+      ]
+     },
+     "get_product": {
+      "type": "object",
+      "properties": {
+       "sku": {
+        "type": "string",
+        "pattern": "^[A-Z0-9-]{2,20}$"
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "sku"
+      ]
+     },
+     "get_stock": {
+      "type": "object",
+      "properties": {
+       "sku": {
+        "type": "string",
+        "pattern": "^[A-Z0-9-]{2,20}$"
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "sku"
+      ]
+     },
+     "delivery_quote": {
+      "type": "object",
+      "properties": {
+       "city": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+       },
+       "method": {
+        "type": "string",
+        "enum": [
+         "branch",
+         "courier",
+         "pickup"
+        ]
+       },
+       "items": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 10,
+        "items": {
+         "type": "object",
+         "properties": {
+          "sku": {
+           "type": "string",
+           "pattern": "^[A-Z0-9-]{2,20}$"
+          },
+          "quantity": {
+           "type": "integer",
+           "minimum": 1,
+           "maximum": 50
+          }
+         },
+         "additionalProperties": false,
+         "required": [
+          "sku",
+          "quantity"
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "city",
+       "method",
+       "items"
+      ]
+     },
+     "create_return": {
+      "type": "object",
+      "properties": {
+       "order_id": {
+        "type": "string",
+        "pattern": "^[0-9]{5}$"
+       },
+       "sku": {
+        "type": "string",
+        "pattern": "^[A-Z0-9-]{2,20}$"
+       },
+       "reason": {
+        "type": "string",
+        "enum": [
+         "not_suitable",
+         "defect",
+         "wrong_item",
+         "damaged"
+        ]
+       },
+       "quantity": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 50
+       },
+       "comment": {
+        "type": "string",
+        "maxLength": 300
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "order_id",
+       "sku",
+       "reason",
+       "quantity"
+      ]
+     }
+    },
+    "provider": "openai",
+    "model": "qwen3:4b",
+    "usage": {
+     "prompt_tokens": 3008,
+     "completion_tokens": 740,
+     "total_tokens": 3748
+    },
+    "cost": null,
+    "rounds": 2,
+    "stopped": "answer",
+    "elapsed_by_kind": {
+     "model": 12.13293689999955,
+     "tools": 0.00025689999984024325
+    },
+    "elapsed": 12.135
+   },
+   "checks": [
+    {
+     "name": "tools_called",
+     "passed": true,
+     "detail": "get_order",
+     "data": null
+    },
+    {
+     "name": "contains_all",
+     "passed": true,
+     "detail": "",
+     "data": null
+    },
+    {
+     "name": "contains_any",
+     "passed": true,
+     "detail": "є «доставк»",
+     "data": null
+    },
+    {
+     "name": "rounds_max",
+     "passed": true,
+     "detail": "2 звертань",
+     "data": null
+    }
+   ],
+   "passed": true
+  }
+ ],
+ "summary": {
+  "normal": {
+   "cases": 1,
+   "pass_all": 1,
+   "pass_any": 1,
+   "flaky": 0,
+   "attempts": 1,
+   "attempts_passed": 1,
+   "errors": 0,
+   "tokens_avg": 3748,
+   "cost_total": null,
+   "elapsed_p50": 12.135
+  },
+  "разом": {
+   "cases": 1,
+   "pass_all": 1,
+   "pass_any": 1,
+   "flaky": 0,
+   "attempts": 1,
+   "attempts_passed": 1,
+   "errors": 0,
+   "tokens_avg": 3748,
+   "cost_total": null,
+   "elapsed_p50": 12.135
+  }
+ }
+}
